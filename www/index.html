@@ -50,6 +50,7 @@ button,select,input{font:inherit}
   <div id="st"></div><div id="grid"></div>
   <div class="links">More: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
 </section>
+<button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button>
 <script>
 const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
 const PREF={27:"Osaka",26:"Kyoto",28:"Hyogo",29:"Nara",30:"Wakayama",23:"Aichi"};
@@ -149,4 +150,4 @@ const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>4
 $("mu").onclick=()=>Mu.toggle();
 if(L.get("music",false)){const r=e=>{if(e.target.closest("#mu"))return;removeEventListener("pointerdown",r);if(!Mu.on)Mu.toggle()};addEventListener("pointerdown",r)}
 const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false;
-</script><button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button></main></body></html>
+</script></main></body></html>

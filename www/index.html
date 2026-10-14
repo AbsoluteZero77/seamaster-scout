@@ -54,14 +54,14 @@ button,select,input{font:inherit}
 <script>
 const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
 const PREF={27:"Osaka",26:"Kyoto",28:"Hyogo",29:"Nara",30:"Wakayama",23:"Aichi"};
-const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&s1=new&o1=d";
+const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const MODES={
  area:{name:"Osaka area",sub:"Osaka, Kyoto, Hyogo, Nara, Wakayama and Aichi (Nagoya)",jobs:()=>Object.keys(PREF).map(c=>({url:ya(c),tag:PREF[c]}))},
  japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),tag:"Japan"}]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis"}]}};
 const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={mode:null,items:[],when:0};
-const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品|未使用|のみ$/;
+const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品(?!同様)|未使用|のみ$|互換|汎用|対応|シーマスター\s*コマ|コマ\s*\d+\s*コマ|文字板/;
 $("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data-k="${k}"><b>${m.name}</b><span>${m.sub}</span></button>`).join("");
 $("menu").onclick=e=>{const b=e.target.closest(".opt");if(b)open(b.dataset.k)};
 $("back").onclick=()=>{L.set("mode",null);$("app").hidden=true;$("menu").hidden=false};
@@ -82,12 +82,19 @@ function open(k){
 async function get(url,enc){
   const cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.CapacitorHttp;
   for(let i=0;i<2;i++){try{
-    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja"}});if(r.status>=400)throw Error("HTTP "+r.status);
+    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja","User-Agent":"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"}});if(r.status>=400)throw Error("HTTP "+r.status);
       return new TextDecoder(enc||"utf-8").decode(Uint8Array.from(atob(r.data),c=>c.charCodeAt(0)))}
     const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
   }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
 }
 const ITEM=/\/jp\/auction\/|\/shop\/g\//;
+function pic(b,base){
+  for(const i of b.querySelectorAll("img")){
+    for(const k of ["data-src","data-original","data-lazy-src","src"]){
+      const v=i.getAttribute(k)||"";
+      if(v&&!/^data:/.test(v)&&!/\/img\/sys\/|\.svg$|icon_|\/na_\d/i.test(v.split("?")[0])){try{return new URL(v,base).href}catch(e){}}}
+  }return "";
+}
 function parse(html,base,tag){
   const d=new DOMParser().parseFromString(html,"text/html"),seen=new Set(),out=[];
   d.querySelectorAll("a[href]").forEach(a=>{
@@ -96,23 +103,24 @@ function parse(html,base,tag){
     let b=a;while(b.parentElement&&b.parentElement!==d.body){
       const n=new Set([...b.parentElement.querySelectorAll("a[href]")].map(x=>x.getAttribute("href").split("?")[0]).filter(x=>ITEM.test(x)));
       if(n.size>1)break;b=b.parentElement}
-    const img=[...b.querySelectorAll("img")].find(i=>!/\/sys\/|\.gif/.test(i.getAttribute("src")||""));
     const txt=b.textContent.replace(/\s+/g," ");
-    const m=txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/([\d,]{4,})\s*円/);
-    const t=(a.getAttribute("title")||[...b.querySelectorAll("a[href]")].map(x=>x.textContent.trim()).sort((x,y)=>y.length-x.length)[0]||"").trim();
-    if(!img||t.length<4)return;
-    out.push({h,t,img:new URL(img.getAttribute("src")||img.getAttribute("data-src")||"",base).href,p:m?parseInt(m[1].replace(/,/g,"")):0,tag});
+    const m=txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/現在\s*([\d,]+)\s*円/)||txt.match(/即決\s*([\d,]+)\s*円/)||txt.match(/([\d,]{4,})\s*円/);
+    const t=[...b.querySelectorAll("a[href]")].filter(x=>{try{return new URL(x.getAttribute("href"),base).href.split("?")[0]===h}catch(e){return false}})
+      .map(x=>(x.getAttribute("title")||x.textContent).trim()).sort((p,q)=>q.length-p.length)[0]||"";
+    if(t.length<4)return;
+    out.push({h,t:t.replace(/\s+/g," "),img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,tag});
   });return out;
 }
 async function update(){
-  const jobs=MODES[S.mode].jobs();
-  if(!jobs.length){$("st").textContent="Paste the shop's listing page URL above, then press Save.";return}
+  const jobs=MODES[S.mode].jobs(),info=[];
   $("u").disabled=true;$("st").textContent="Checking "+jobs.length+" source"+(jobs.length>1?"s":"")+"…";
   $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
-  const res=await Promise.allSettled(jobs.map(async j=>parse(await get(j.url,j.enc),j.url,j.tag)));
+  const res=await Promise.allSettled(jobs.map(async j=>{const h=await get(j.url,j.enc);const it=parse(h,j.url,j.tag);info.push(j.tag+": "+h.length+" chars, "+it.length+" listings");return it}));
   const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
-  const all=[].concat(...ok.map(r=>r.value)),u=new Map();all.forEach(i=>u.has(i.h)||u.set(i.h,i));
   if(!ok.length){$("st").textContent="Update failed: "+bad[0].reason.message;render();$("u").disabled=false;return}
+  const u=new Map(),lists=ok.map(r=>r.value);
+  for(let k=0;;k++){let any=false;for(const l of lists)if(l[k]){any=true;u.has(l[k].h)||u.set(l[k].h,l[k])}if(!any)break}
+  if(!u.size){S.items=[];S.when=Date.now();render("Connected but found no listings ("+info.join("; ")+"). ");$("u").disabled=false;return}
   const prev=new Set(L.get("seen_"+S.mode,null)||[]),first=!prev.size;
   S.items=[...u.values()].map(i=>({...i,n:!first&&!prev.has(i.h)}));S.when=Date.now();
   L.set("c_"+S.mode,{items:S.items,when:S.when});
@@ -126,11 +134,11 @@ function render(note=""){
   if(max)v=v.filter(i=>!i.p||i.p<=max);if(nw)v=v.filter(i=>i.n);
   const s=$("sort").value;if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9))*(s==="lo"?1:1));
   $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";
-  if(S.items.length||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings shown";
+  if(S.when||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings shown";
   $("grid").innerHTML="";
   v.forEach(i=>{const c=document.createElement("div");c.className="c";
     c.innerHTML='<a class="m" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" alt=""><div class="i"><div class="t"></div><div class="p"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Translate to English</a></div>'+(i.n?'<span class="nw">NEW</span>':"");
-    const a=c.querySelector(".m");a.href=i.h;c.querySelector("img").src=i.img;c.querySelector(".t").textContent=i.t;
+    const a=c.querySelector(".m");a.href=i.h;if(i.img)c.querySelector("img").src=i.img;c.querySelector(".t").textContent=i.t;
     c.querySelector(".p").textContent=i.p?"¥"+i.p.toLocaleString():"Price on page";c.querySelector(".tag").textContent=i.tag;
     c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);$("grid").appendChild(c)});
 }

@@ -55,9 +55,10 @@ button,select,input{font:inherit}
 const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
 const PREF={27:"Osaka",26:"Kyoto",28:"Hyogo",29:"Nara",30:"Wakayama",23:"Aichi"};
 const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
+const yp=l=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(Q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const MODES={
- area:{name:"Osaka area",sub:"Osaka, Kyoto, Hyogo, Nara, Wakayama and Aichi (Nagoya)",jobs:()=>Object.keys(PREF).map(c=>({url:ya(c),tag:PREF[c]}))},
- japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),tag:"Japan"}]},
+ area:{name:"Osaka area",sub:"Osaka, Kyoto, Hyogo, Nara, Wakayama and Aichi (Nagoya)",jobs:()=>Object.keys(PREF).map(c=>({url:ya(c),alt:yp(c),tag:PREF[c]}))},
+ japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),alt:yp(),tag:"Japan"}]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis"}]}};
 const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={mode:null,items:[],when:0};
@@ -95,7 +96,7 @@ function pic(b,base){
       if(v&&!/^data:/.test(v)&&!/\/img\/sys\/|\.svg$|icon_|\/na_\d/i.test(v.split("?")[0])){try{return new URL(v,base).href}catch(e){}}}
   }return "";
 }
-function parse(html,base,tag){
+function parseA(html,base,tag){
   const d=new DOMParser().parseFromString(html,"text/html"),seen=new Set(),out=[];
   d.querySelectorAll("a[href]").forEach(a=>{
     let h;try{h=new URL(a.getAttribute("href"),base).href.split("?")[0]}catch(e){return}
@@ -111,11 +112,37 @@ function parse(html,base,tag){
     out.push({h,t:t.replace(/\s+/g," "),img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,tag});
   });return out;
 }
+function mine(html,tag){
+  const out=[],seen=new Set();
+  const take=o=>{
+    const id=o.auctionId||o.auctionID||o.aucId||o.id;
+    if(typeof id!=="string"||!/^[a-z]?\d{8,}$/i.test(id))return;
+    const t=o.title||o.name;if(typeof t!=="string"||t.length<4||seen.has(id))return;seen.add(id);
+    let p=o.price??o.currentPrice??o.nowPrice??o.bidPrice??o.buyNowPrice??0;if(typeof p==="string")p=parseInt(p.replace(/\D/g,""))||0;
+    let im=o.imageUrl||o.image||o.img||o.thumbnail||"";if(im&&typeof im==="object")im=im.url||im.src||"";
+    out.push({h:"https://auctions.yahoo.co.jp/jp/auction/"+id,t:t.replace(/\s+/g," "),img:typeof im==="string"?im:"",p:+p||0,tag});
+  };
+  const walk=o=>{if(!o||typeof o!=="object")return;if(Array.isArray(o))o.forEach(walk);else{take(o);Object.values(o).forEach(walk)}};
+  new DOMParser().parseFromString(html,"text/html").querySelectorAll("script").forEach(sc=>{
+    const x=sc.textContent.trim();if(!x)return;
+    let m=null;if(x[0]==="{"||x[0]==="[")m=x;else{const q=x.match(/=\s*(\{[\s\S]*\})\s*;?\s*$/);if(q)m=q[1]}
+    if(m)try{walk(JSON.parse(m))}catch(e){}});
+  return out;
+}
+function raw(html,tag){
+  const out=[],seen=new Set(),re=/"auctionId"\s*:\s*"([^"]+)"[\s\S]{0,2500}?"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g;let m;
+  while((m=re.exec(html))){if(seen.has(m[1]))continue;seen.add(m[1]);let t=m[2];try{t=JSON.parse('"'+t+'"')}catch(e){}
+    const w=html.slice(m.index,m.index+3000),pm=w.match(/"price"\s*:\s*"?(\d+)/),im=w.match(/"(?:imageUrl|image|img)"\s*:\s*"(https?:[^"]+)"/);
+    out.push({h:"https://auctions.yahoo.co.jp/jp/auction/"+m[1],t,img:im?im[1].replace(/\\u0026/g,"&").replace(/\\\//g,"/"):"",p:pm?+pm[1]:0,tag})}
+  return out;
+}
+function extract(html,base,tag){let r=parseA(html,base,tag);if(r.length)return r;r=mine(html,tag);return r.length?r:raw(html,tag)}
+function diag(h){const t=(h.match(/<title>([^<]{0,40})/)||[])[1]||"no title";return"title="+t+", links="+(h.match(/\/jp\/auction\//g)||[]).length+", ids="+(h.match(/auctionId/g)||[]).length+", next="+h.includes("__NEXT_DATA__")}
 async function update(){
   const jobs=MODES[S.mode].jobs(),info=[];
   $("u").disabled=true;$("st").textContent="Checking "+jobs.length+" source"+(jobs.length>1?"s":"")+"…";
   $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
-  const res=await Promise.allSettled(jobs.map(async j=>{const h=await get(j.url,j.enc);const it=parse(h,j.url,j.tag);info.push(j.tag+": "+h.length+" chars, "+it.length+" listings");return it}));
+  const res=await Promise.allSettled(jobs.map(async j=>{let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag)}info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");return it}));
   const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
   if(!ok.length){$("st").textContent="Update failed: "+bad[0].reason.message;render();$("u").disabled=false;return}
   const u=new Map(),lists=ok.map(r=>r.value);

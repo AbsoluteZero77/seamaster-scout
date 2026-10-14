@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Seamaster Scout</title><link rel="icon" href="icon.png"><link rel="apple-touch-icon" href="icon.png">
+<style>
+:root{--bg:#e6e8eb;--ink:#17232b;--mute:#5d6b75;--card:#fff;--line:#cfd5da;--acc:#0b3d63;--new:#c8102e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px 40px}
+main{max-width:980px;margin:0 auto}
+h1{font:600 24px Georgia,serif;margin:8px 0 2px}
+.sub{color:var(--mute);font-size:14px}
+button,select,input{font:inherit}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+.btn:disabled{opacity:.5}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.menu{display:grid;gap:12px;margin-top:20px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:left;cursor:pointer;width:100%}
+.opt:hover{border-color:var(--acc)}
+.opt b{display:block;font-size:18px}.opt span{color:var(--mute);font-size:14px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0}
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.filters input[type=number],select{border:1px solid var(--line);border-radius:6px;padding:6px;background:#fff;width:auto}
+#st{color:var(--mute);font-size:14px;margin:12px 0}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.c a.m{color:inherit;text-decoration:none;display:block}
+.c img{width:100%;aspect-ratio:1;object-fit:cover;background:#dfe3e6;display:block}
+.c .i{padding:10px 12px}.t{font-size:13px;max-height:3.9em;overflow:hidden}
+.p{margin-top:6px;font-weight:700;font-size:17px;color:var(--acc)}
+.tag{font-size:12px;color:var(--mute)}
+.c .x{padding:0 12px 10px;font-size:12px}.x a{color:var(--acc)}
+.nw{position:absolute;top:8px;left:8px;background:var(--new);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.sk{height:250px;background:linear-gradient(90deg,#dde1e4,#eef0f2,#dde1e4);background-size:200% 100%;animation:s 1.2s infinite;border-radius:10px}
+@keyframes s{to{background-position:-200% 0}}
+.links{margin-top:28px;font-size:14px;color:var(--mute)}.links a{color:var(--acc);margin-right:14px}
+.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));background:var(--card)}
+[hidden]{display:none!important}
+</style></head><body><main>
+<h1>Seamaster Scout</h1><div class="sub">Used Omega Seamaster Diver 300M listings across Japan</div>
+<div id="menu" class="menu" hidden></div>
+<section id="app" hidden>
+  <div class="bar"><div><b id="mn"></b><div class="sub" id="when"></div></div>
+    <div><button class="btn ghost" id="back">Change search</button> <button class="btn" id="u">Update</button></div></div>
+  <div class="filters">
+    <label>Max price ¥ <input id="max" type="number" step="50000" min="0" style="width:110px"></label>
+    <label>Sort <select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></label>
+    <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new</label>
+    <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
+  <div id="st"></div><div id="grid"></div>
+  <div class="links">More: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
+</section>
+<script>
+const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
+const PREF={27:"Osaka",26:"Kyoto",28:"Hyogo",29:"Nara",30:"Wakayama",23:"Aichi"};
+const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&s1=new&o1=d";
+const MODES={
+ area:{name:"Osaka area",sub:"Osaka, Kyoto, Hyogo, Nara, Wakayama and Aichi (Nagoya)",jobs:()=>Object.keys(PREF).map(c=>({url:ya(c),tag:PREF[c]}))},
+ japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),tag:"Japan"}]},
+ takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis"}]}};
+const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={mode:null,items:[],when:0};
+const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品|未使用|のみ$/;
+$("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data-k="${k}"><b>${m.name}</b><span>${m.sub}</span></button>`).join("");
+$("menu").onclick=e=>{const b=e.target.closest(".opt");if(b)open(b.dataset.k)};
+$("back").onclick=()=>{L.set("mode",null);$("app").hidden=true;$("menu").hidden=false};
+$("max").value=L.get("max",800000);
+["max","sort","junk","onlynew"].forEach(i=>$(i).onchange=()=>{L.set("max",+$("max").value||0);render()});
+$("u").onclick=update;
+const enc=encodeURIComponent(Q);
+$("l1").href="https://jp.mercari.com/search?keyword="+enc+"&sort=created_time&order=desc";
+$("l2").href="https://www.chrono24.jp/search/index.htm?query="+encodeURIComponent("Omega Seamaster Diver 300M");
+$("l3").href="https://www.komehyo.jp/search/?q="+enc;$("l4").href="https://www.2ndstreet.jp/search?keyword="+enc;
+
+function open(k){
+  S.mode=k;L.set("mode",k);$("menu").hidden=true;$("app").hidden=false;
+  $("mn").textContent=MODES[k].name;
+  const c=L.get("c_"+k,null);S.items=c?c.items:[];S.when=c?c.when:0;render();
+  if(!c||Date.now()-c.when>36e5)update();
+}
+async function get(url,enc){
+  const cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.CapacitorHttp;
+  for(let i=0;i<2;i++){try{
+    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja"}});if(r.status>=400)throw Error("HTTP "+r.status);
+      return new TextDecoder(enc||"utf-8").decode(Uint8Array.from(atob(r.data),c=>c.charCodeAt(0)))}
+    const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
+  }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
+}
+const ITEM=/\/jp\/auction\/|\/shop\/g\//;
+function parse(html,base,tag){
+  const d=new DOMParser().parseFromString(html,"text/html"),seen=new Set(),out=[];
+  d.querySelectorAll("a[href]").forEach(a=>{
+    let h;try{h=new URL(a.getAttribute("href"),base).href.split("?")[0]}catch(e){return}
+    if(!ITEM.test(h)||seen.has(h))return;seen.add(h);
+    let b=a;while(b.parentElement&&b.parentElement!==d.body){
+      const n=new Set([...b.parentElement.querySelectorAll("a[href]")].map(x=>x.getAttribute("href").split("?")[0]).filter(x=>ITEM.test(x)));
+      if(n.size>1)break;b=b.parentElement}
+    const img=[...b.querySelectorAll("img")].find(i=>!/\/sys\/|\.gif/.test(i.getAttribute("src")||""));
+    const txt=b.textContent.replace(/\s+/g," ");
+    const m=txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/([\d,]{4,})\s*円/);
+    const t=(a.getAttribute("title")||[...b.querySelectorAll("a[href]")].map(x=>x.textContent.trim()).sort((x,y)=>y.length-x.length)[0]||"").trim();
+    if(!img||t.length<4)return;
+    out.push({h,t,img:new URL(img.getAttribute("src")||img.getAttribute("data-src")||"",base).href,p:m?parseInt(m[1].replace(/,/g,"")):0,tag});
+  });return out;
+}
+async function update(){
+  const jobs=MODES[S.mode].jobs();
+  if(!jobs.length){$("st").textContent="Paste the shop's listing page URL above, then press Save.";return}
+  $("u").disabled=true;$("st").textContent="Checking "+jobs.length+" source"+(jobs.length>1?"s":"")+"…";
+  $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
+  const res=await Promise.allSettled(jobs.map(async j=>parse(await get(j.url,j.enc),j.url,j.tag)));
+  const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
+  const all=[].concat(...ok.map(r=>r.value)),u=new Map();all.forEach(i=>u.has(i.h)||u.set(i.h,i));
+  if(!ok.length){$("st").textContent="Update failed: "+bad[0].reason.message;render();$("u").disabled=false;return}
+  const prev=new Set(L.get("seen_"+S.mode,null)||[]),first=!prev.size;
+  S.items=[...u.values()].map(i=>({...i,n:!first&&!prev.has(i.h)}));S.when=Date.now();
+  L.set("c_"+S.mode,{items:S.items,when:S.when});
+  L.set("seen_"+S.mode,[...new Set([...prev,...S.items.map(i=>i.h)])].slice(-600));
+  render(bad.length?bad.length+" source(s) failed. ":"");$("u").disabled=false;
+}
+function render(note=""){
+  const max=+$("max").value||0,j=$("junk").checked,nw=$("onlynew").checked;
+  let v=S.items.filter(i=>/シーマスター|seamaster/i.test(i.t)&&/300|ダイバー|diver/i.test(i.t));
+  if(j)v=v.filter(i=>!JUNK.test(i.t));
+  if(max)v=v.filter(i=>!i.p||i.p<=max);if(nw)v=v.filter(i=>i.n);
+  const s=$("sort").value;if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9))*(s==="lo"?1:1));
+  $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";
+  if(S.items.length||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings shown";
+  $("grid").innerHTML="";
+  v.forEach(i=>{const c=document.createElement("div");c.className="c";
+    c.innerHTML='<a class="m" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" alt=""><div class="i"><div class="t"></div><div class="p"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Translate to English</a></div>'+(i.n?'<span class="nw">NEW</span>':"");
+    const a=c.querySelector(".m");a.href=i.h;c.querySelector("img").src=i.img;c.querySelector(".t").textContent=i.t;
+    c.querySelector(".p").textContent=i.p?"¥"+i.p.toLocaleString():"Price on page";c.querySelector(".tag").textContent=i.tag;
+    c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);$("grid").appendChild(c)});
+}
+const TUNE={"n":[[0,38,3,0],[3,38,1,0],[6,45,2,0],[8,38,3,0],[11,50,1,0],[14,45,2,0],[0,74,3,1],[3,77,1,1],[4,81,3,1],[8,79,2,1],[10,77,2,1],[12,74,4,1],[4,62,2,2],[4,65,2,2],[4,69,2,2],[10,62,2,2],[10,65,2,2],[10,69,2,2],[16,38,3,0],[19,38,1,0],[22,45,2,0],[24,38,3,0],[27,50,1,0],[30,45,2,0],[16,76,3,1],[19,77,1,1],[20,74,3,1],[24,73,2,1],[26,74,2,1],[28,69,4,1],[20,62,2,2],[20,65,2,2],[20,69,2,2],[26,62,2,2],[26,65,2,2],[26,69,2,2],[32,43,3,0],[35,43,1,0],[38,50,2,0],[40,43,3,0],[43,55,1,0],[46,50,2,0],[32,70,3,1],[35,74,1,1],[36,77,3,1],[40,76,2,1],[42,74,2,1],[44,70,4,1],[36,67,2,2],[36,70,2,2],[36,74,2,2],[42,67,2,2],[42,70,2,2],[42,74,2,2],[48,45,3,0],[51,45,1,0],[54,52,2,0],[56,45,3,0],[59,57,1,0],[62,52,2,0],[48,73,3,1],[51,76,1,1],[52,79,3,1],[56,77,2,1],[58,76,2,1],[60,73,2,1],[62,69,2,1],[52,57,2,2],[52,61,2,2],[52,64,2,2],[52,67,2,2],[58,57,2,2],[58,61,2,2],[58,64,2,2],[58,67,2,2],[64,38,3,0],[67,38,1,0],[70,45,2,0],[72,38,3,0],[75,50,1,0],[78,45,2,0],[64,81,3,1],[67,77,1,1],[68,74,3,1],[72,77,2,1],[74,81,2,1],[76,74,4,1],[68,62,2,2],[68,65,2,2],[68,69,2,2],[74,62,2,2],[74,65,2,2],[74,69,2,2],[80,46,3,0],[83,46,1,0],[86,53,2,0],[88,46,3,0],[91,58,1,0],[94,53,2,0],[80,77,3,1],[83,74,1,1],[84,70,3,1],[88,74,2,1],[90,77,2,1],[92,82,4,1],[84,58,2,2],[84,62,2,2],[84,65,2,2],[90,58,2,2],[90,62,2,2],[90,65,2,2],[96,45,3,0],[99,45,1,0],[102,52,2,0],[104,45,3,0],[107,57,1,0],[110,52,2,0],[96,81,2,1],[98,79,2,1],[100,76,2,1],[102,73,2,1],[104,76,4,1],[108,73,4,1],[100,57,2,2],[100,61,2,2],[100,64,2,2],[100,67,2,2],[106,57,2,2],[106,61,2,2],[106,64,2,2],[106,67,2,2],[112,38,3,0],[115,38,1,0],[118,45,2,0],[120,38,3,0],[123,50,1,0],[126,45,2,0],[112,74,8,1],[120,69,4,1],[124,74,2,1],[126,69,2,1],[116,62,2,2],[116,65,2,2],[116,69,2,2],[122,62,2,2],[122,65,2,2],[122,69,2,2]],"d":[[0,0],[6,0],[8,0],[4,2],[12,2],[0,1],[2,1],[4,1],[6,1],[8,1],[10,1],[12,1],[14,1],[16,0],[22,0],[24,0],[20,2],[28,2],[16,1],[18,1],[20,1],[22,1],[24,1],[26,1],[28,1],[30,1],[32,0],[38,0],[40,0],[36,2],[44,2],[32,1],[34,1],[36,1],[38,1],[40,1],[42,1],[44,1],[46,1],[48,0],[54,0],[56,0],[52,2],[60,2],[48,1],[50,1],[52,1],[54,1],[56,1],[58,1],[60,1],[62,1],[64,0],[70,0],[72,0],[68,2],[76,2],[64,1],[66,1],[68,1],[70,1],[72,1],[74,1],[76,1],[78,1],[80,0],[86,0],[88,0],[84,2],[92,2],[80,1],[82,1],[84,1],[86,1],[88,1],[90,1],[92,1],[94,1],[96,0],[102,0],[104,0],[100,2],[108,2],[96,1],[98,1],[100,1],[102,1],[104,1],[106,1],[108,1],[110,1],[112,0],[118,0],[120,0],[116,2],[124,2],[112,1],[114,1],[116,1],[118,1],[120,1],[122,1],[124,1],[126,1]]};
+const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>440*2**((n-69)/12);
+ function tone(f,t,d,type,g,lp){const o=ctx.createOscillator(),e=ctx.createGain(),fl=ctx.createBiquadFilter();o.type=type;o.frequency.value=f;fl.type="lowpass";fl.frequency.value=lp;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl);fl.connect(e);e.connect(m);o.start(t);o.stop(t+d+.05)}
+ function noise(t,d,g,hp){const b=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*d),ctx.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),e=ctx.createGain();s.buffer=b;f.type="highpass";f.frequency.value=hp;e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(e);e.connect(m);s.start(t)}
+ function kick(t){const o=ctx.createOscillator(),e=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(40,t+.12);e.gain.setValueAtTime(.9,t);e.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(e);e.connect(m);o.start(t);o.stop(t+.25)}
+ function sched(){while(nextT<ctx.currentTime+.2){const s=step%128;
+  TUNE.n.forEach(x=>{if(x[0]===s){const d=x[2]*SP,f=hz(x[1]);x[3]===0?tone(f,nextT,d*1.1,"sawtooth",.5,500):x[3]===1?tone(f,nextT,d*1.2,"triangle",.35,2500):tone(f,nextT,d*.8,"square",.08,1800)}});
+  TUNE.d.forEach(x=>{if(x[0]===s){x[1]===0?kick(nextT):x[1]===2?noise(nextT,.12,.35,1200):noise(nextT,.04,.15,7000)}});
+  nextT+=SP;step++}}
+ return{get on(){return on},toggle(){
+  if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();m=ctx.createGain();m.gain.value=.16;m.connect(ctx.destination)}
+  ctx.resume();on=!on;if(on){nextT=ctx.currentTime+.05;step=0;timer=setInterval(sched,50)}else clearInterval(timer);
+  $("mu").textContent="♪ Music: "+(on?"on":"off");$("mu").setAttribute("aria-pressed",on);L.set("music",on)}}})();
+$("mu").onclick=()=>Mu.toggle();
+if(L.get("music",false)){const r=e=>{if(e.target.closest("#mu"))return;removeEventListener("pointerdown",r);if(!Mu.on)Mu.toggle()};addEventListener("pointerdown",r)}
+const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false;
+</script><button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button></main></body></html>

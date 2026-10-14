@@ -1,43 +1,63 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3d63">
 <title>Seamaster Scout</title><link rel="icon" href="icon.png"><link rel="apple-touch-icon" href="icon.png">
 <style>
-:root{--bg:#e6e8eb;--ink:#17232b;--mute:#5d6b75;--card:#fff;--line:#cfd5da;--acc:#0b3d63;--new:#c8102e}
+:root{--bg1:#eef0f3;--bg2:#dde2e8;--ink:#14232d;--mute:#5a6b77;--card:#fff;--line:#d0d7de;--navy:#0b3d63;--navy2:#165b8f;--gold:#e8b100;--new:#d3122f}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px 40px}
-main{max-width:980px;margin:0 auto}
-h1{font:600 24px Georgia,serif;margin:8px 0 2px}
-.sub{color:var(--mute);font-size:14px}
+body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2)) fixed;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(0px,env(safe-area-inset-top)) 16px 56px}
+main{max-width:1000px;margin:0 auto}
+.hero{position:relative;margin:14px 0 18px;padding:20px;display:flex;gap:14px;align-items:center;color:#fff;background:linear-gradient(135deg,#072d4a,#0f5486 55%,#0a3b63);border-radius:20px;box-shadow:0 10px 26px rgba(7,45,74,.3);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.26),rgba(255,255,255,0) 45%);pointer-events:none}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.logo{width:58px;height:58px;flex:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+h1{font:700 26px/1.1 Georgia,"Times New Roman",serif;margin:0;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.sub{color:var(--mute);font-size:14px}.hero .sub{color:#cfe3f3;margin-top:4px}
 button,select,input{font:inherit}
-.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
-.btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
-.btn:disabled{opacity:.5}
-:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.menu{display:grid;gap:12px;margin-top:20px}
-.opt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:left;cursor:pointer;width:100%}
-.opt:hover{border-color:var(--acc)}
-.opt b{display:block;font-size:18px}.opt span{color:var(--mute);font-size:14px}
-.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0}
-.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
-.filters input[type=number],select{border:1px solid var(--line);border-radius:6px;padding:6px;background:#fff;width:auto}
-#st{color:var(--mute);font-size:14px;margin:12px 0}
-#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(180deg,#2273ad,var(--navy) 55%,#082f4d);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 3px 8px rgba(11,61,99,.35);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}
+.btn.ghost{color:var(--navy);background:linear-gradient(180deg,#fff,#e9edf1);border:1px solid #b9c4cd;box-shadow:inset 0 1px 0 #fff,0 2px 5px rgba(0,0,0,.08)}
+.btn:disabled{opacity:.55;cursor:wait}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.menu{display:grid;gap:14px}
+.opt{display:flex;gap:16px;align-items:center;text-align:left;width:100%;padding:18px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f3f5f7);box-shadow:0 2px 8px rgba(20,35,45,.08),inset 0 1px 0 #fff;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;color:inherit}
+.opt::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.8),transparent);transform:skewX(-20deg);transition:left .6s;pointer-events:none}
+.opt:hover{transform:translateY(-2px);border-color:var(--navy2);box-shadow:0 10px 22px rgba(11,61,99,.18)}.opt:hover::after{left:120%}
+.opt b{display:block;font-size:18px}.opt .d{color:var(--mute);font-size:14px}
+.ic{flex:none;width:54px;height:54px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#3a96d4,#0b3d63);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 10px rgba(11,61,99,.3)}
+.ic svg{width:28px;height:28px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:6px 0 14px}
+.bar b{font:700 21px Georgia,serif}
+.filters{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
+.filters input[type=number],select{border:1px solid #b9c4cd;border-radius:8px;padding:7px 8px;background:#fff;color:var(--ink)}
+.filters input[type=checkbox]{accent-color:var(--navy);width:16px;height:16px}
+#st{color:var(--mute);font-size:14px;margin:14px 2px}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+.c{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(20,35,45,.08);transition:transform .2s,box-shadow .2s}
+.c:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(11,61,99,.2)}
+.c::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);pointer-events:none;transition:left .7s}
+.c:hover::after{left:130%}
 .c a.m{color:inherit;text-decoration:none;display:block}
-.c img{width:100%;aspect-ratio:1;object-fit:cover;background:#dfe3e6;display:block}
-.c .i{padding:10px 12px}.t{font-size:13px;max-height:3.9em;overflow:hidden}
-.p{margin-top:6px;font-weight:700;font-size:17px;color:var(--acc)}
-.tag{font-size:12px;color:var(--mute)}
-.c .x{padding:0 12px 10px;font-size:12px}.x a{color:var(--acc)}
-.nw{position:absolute;top:8px;left:8px;background:var(--new);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
-.sk{height:250px;background:linear-gradient(90deg,#dde1e4,#eef0f2,#dde1e4);background-size:200% 100%;animation:s 1.2s infinite;border-radius:10px}
+.c img{width:100%;aspect-ratio:1;object-fit:cover;background:radial-gradient(circle at 35% 30%,#f3f5f7,#cdd4da);display:block;transition:transform .4s}
+.c:hover img{transform:scale(1.04)}
+.c .i{padding:12px 14px 6px}
+.t{font-weight:600;font-size:14px;line-height:1.3;max-height:4em;overflow:hidden}
+.o{color:var(--mute);font-size:11px;margin-top:3px;max-height:2.6em;overflow:hidden}
+.p{display:inline-block;margin-top:9px;padding:3px 12px;border-radius:99px;font:800 16px system-ui;color:#fff;background:linear-gradient(180deg,#2273ad,#0b3d63);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.tag{font-size:12px;color:var(--mute);margin-top:6px}
+.c .x{padding:0 14px 12px;font-size:12px}.x a{color:var(--navy2);font-weight:600}
+.nw{position:absolute;z-index:2;top:10px;left:10px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.6px;padding:3px 10px;border-radius:99px;background:linear-gradient(180deg,#f0344f,var(--new));box-shadow:0 2px 8px rgba(211,18,47,.5),inset 0 1px 0 rgba(255,255,255,.5);animation:pl 2s infinite}
+@keyframes pl{50%{box-shadow:0 2px 14px rgba(211,18,47,.85),inset 0 1px 0 rgba(255,255,255,.5)}}
+.sk{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(100deg,#dfe4e8 30%,#f4f6f8 50%,#dfe4e8 70%);background-size:200% 100%;animation:s 1.3s infinite}
 @keyframes s{to{background-position:-200% 0}}
-.links{margin-top:28px;font-size:14px;color:var(--mute)}.links a{color:var(--acc);margin-right:14px}
-.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));background:var(--card)}
+.links{margin-top:30px;font-size:14px;color:var(--mute)}.links a{color:var(--navy2);font-weight:600;margin-right:14px}
+.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:5;border-radius:99px;backdrop-filter:blur(8px)}
 [hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><main>
-<h1>Seamaster Scout</h1><div class="sub">Used Omega Seamaster Diver 300M listings across Japan</div>
+<header class="hero"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset=".5" stop-color="#7f8d99"/><stop offset="1" stop-color="#eef2f6"/></linearGradient><radialGradient id="g2"><stop offset="0" stop-color="#47a3e6"/><stop offset="1" stop-color="#0b3d63"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#g1)"/><circle cx="32" cy="32" r="25" fill="#0c1115"/><circle cx="32" cy="32" r="21" fill="url(#g2)"/><path d="M32 32L22 25M32 32L44 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="12.5" r="2.2" fill="#f2b705"/><circle cx="32" cy="32" r="2.4" fill="#f2b705"/><path d="M15 21a21 21 0 0 1 24-9" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+<div><h1>Seamaster Scout</h1><div class="sub">Used Omega Seamaster Diver 300M finder</div></div></header>
 <div id="menu" class="menu" hidden></div>
 <section id="app" hidden>
   <div class="bar"><div><b id="mn"></b><div class="sub" id="when"></div></div>
@@ -48,22 +68,22 @@ button,select,input{font:inherit}
     <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new</label>
     <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
   <div id="st"></div><div id="grid"></div>
-  <div class="links">More: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
+  <div class="links">More searches: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
 </section>
 <button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button>
 <script>
 const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
-const PREF={27:"Osaka",26:"Kyoto",28:"Hyogo",29:"Nara",30:"Wakayama",23:"Aichi"};
 const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=l=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(Q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const MODES={
- area:{name:"Osaka area",sub:"Osaka, Kyoto, Hyogo, Nara, Wakayama and Aichi (Nagoya)",jobs:()=>Object.keys(PREF).map(c=>({url:ya(c),alt:yp(c),tag:PREF[c]}))},
+ area:{name:"Osaka",sub:"Listings located in Osaka, same as the original search",jobs:()=>[{url:ya(27),alt:yp(27),tag:"Osaka"}]},
  japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),alt:yp(),tag:"Japan"}]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis"}]}};
 const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={mode:null,items:[],when:0};
 const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品(?!同様)|未使用|のみ$|互換|汎用|対応|シーマスター\s*コマ|コマ\s*\d+\s*コマ|文字板/;
-$("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data-k="${k}"><b>${m.name}</b><span>${m.sub}</span></button>`).join("");
+const ICON={area:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',japan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',takayama:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 2 3 2 4 0 1 2 3 2 4 0 1 2 3 2 4 0 1 2 4 2 4 0"/><path d="M10 20v-5h4v5"/></svg>'};
+$("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data-k="${k}"><span class="ic">${ICON[k]}</span><span><b>${m.name}</b><span class="d">${m.sub}</span></span></button>`).join("");
 $("menu").onclick=e=>{const b=e.target.closest(".opt");if(b)open(b.dataset.k)};
 $("back").onclick=()=>{L.set("mode",null);$("app").hidden=true;$("menu").hidden=false};
 $("max").value=L.get("max",800000);
@@ -154,18 +174,22 @@ async function update(){
   L.set("seen_"+S.mode,[...new Set([...prev,...S.items.map(i=>i.h)])].slice(-600));
   render(bad.length?bad.length+" source(s) failed. ":"");$("u").disabled=false;
 }
+const N=t=>t.normalize("NFKC");
+const GL=[["オメガ","Omega"],["シーマスター","Seamaster"],["ダイバー","Diver"],["プロフェッショナル","Professional"],["コーアクシャル","Co-Axial"],["マスタークロノメーター","Master Chronometer"],["クロノメーター","Chronometer"],["クロノグラフ","Chronograph"],["自動巻き","Automatic"],["自動巻","Automatic"],["クォーツ","Quartz"],["クオーツ","Quartz"],["腕時計","Watch"],["メンズ","Men's"],["ボーイズ","Boys'"],["レディース","Ladies'"],["ブルー","Blue"],["ブラック","Black"],["グリーン","Green"],["ホワイト","White"],["青文字盤","Blue dial"],["黒文字盤","Black dial"],["文字盤","dial"],["ステンレス","Stainless steel"],["チタン","Titanium"],["エディション","Edition"],["保証書","Warranty card"],["保証","Warranty"],["付属品","Accessories"],["余りコマ","Spare links"],["箱","Box"],["カード","Card"],["付き","Included"],["極美品","Mint"],["美品","Excellent"],["中古","Used"],["稼働品","Working"],["稼働","Working"],["完品","Complete set"],["送料無料","Free shipping"],["本体","Watch only"],["ブレスレット","Bracelet"],["ブレス","Bracelet"],["ベルト","Strap"],["ラバー","Rubber"],["デイト","Date"],["日付","Date"],["ダイビング","Diving"],["ヘリウム","Helium"],["オーバーホール済","Serviced"],["オーバーホール","Overhaul"],["動作確認済","Tested"],["ケース","Case"],["限定","Limited"],["ランク","Grade"],["品","item"]].sort((a,b)=>b[0].length-a[0].length);
+const GM=Object.fromEntries(GL),GR=new RegExp(GL.map(x=>x[0]).join("|"),"g");
+const en=t=>N(t).replace(GR,m=>" "+GM[m]+" ").replace(/[【】『』「」★☆◆◇■□●○]/g," ").replace(/\s+/g," ").trim();
 function render(note=""){
   const max=+$("max").value||0,j=$("junk").checked,nw=$("onlynew").checked;
-  let v=S.items.filter(i=>/シーマスター|seamaster/i.test(i.t)&&/300|ダイバー|diver/i.test(i.t));
-  if(j)v=v.filter(i=>!JUNK.test(i.t));
+  let v=S.items.filter(i=>/シーマスター|seamaster/i.test(N(i.t))&&/300|ダイバー|diver/i.test(N(i.t)));
+  if(j)v=v.filter(i=>!JUNK.test(N(i.t)));
   if(max)v=v.filter(i=>!i.p||i.p<=max);if(nw)v=v.filter(i=>i.n);
   const s=$("sort").value;if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9))*(s==="lo"?1:1));
   $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";
   if(S.when||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings shown";
   $("grid").innerHTML="";
   v.forEach(i=>{const c=document.createElement("div");c.className="c";
-    c.innerHTML='<a class="m" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" alt=""><div class="i"><div class="t"></div><div class="p"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Translate to English</a></div>'+(i.n?'<span class="nw">NEW</span>':"");
-    const a=c.querySelector(".m");a.href=i.h;if(i.img)c.querySelector("img").src=i.img;c.querySelector(".t").textContent=i.t;
+    c.innerHTML='<a class="m" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" alt=""><div class="i"><div class="t"></div><div class="o"></div><div class="p"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"");
+    const a=c.querySelector(".m");a.href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}{const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
     c.querySelector(".p").textContent=i.p?"¥"+i.p.toLocaleString():"Price on page";c.querySelector(".tag").textContent=i.tag;
     c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);$("grid").appendChild(c)});
 }

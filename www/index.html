@@ -63,7 +63,7 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><main>
 <header class="hero"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset=".5" stop-color="#7f8d99"/><stop offset="1" stop-color="#eef2f6"/></linearGradient><radialGradient id="g2"><stop offset="0" stop-color="#47a3e6"/><stop offset="1" stop-color="#0b3d63"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#g1)"/><circle cx="32" cy="32" r="25" fill="#0c1115"/><circle cx="32" cy="32" r="21" fill="url(#g2)"/><path d="M32 32L22 25M32 32L44 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="12.5" r="2.2" fill="#f2b705"/><circle cx="32" cy="32" r="2.4" fill="#f2b705"/><path d="M15 21a21 21 0 0 1 24-9" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-<div><h1>Seamaster Scout</h1><div class="sub">Used Omega Seamaster Diver 300M finder</div></div></header>
+<div><h1>Seamaster Scout</h1><div class="sub">Modern Omega Seamaster Diver 300M Co-Axial · blue or black · date only</div></div></header>
 <div id="menu" class="menu" hidden></div>
 <section id="app" hidden>
   <div class="bar"><div><b id="mn"></b><div class="sub" id="when"></div></div>
@@ -73,6 +73,7 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
     <label>Sort <select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></label>
     <label>Movement <select id="mv"><option value="">Automatic or quartz</option><option value="auto">Automatic</option><option value="quartz">Quartz</option></select></label>
     <label>Stock <select id="stock"><option value="">Shop floors + online store</option><option value="floor">Shop floors only</option></select></label>
+    <label><input type="checkbox" id="spec" checked> My spec only: Co-Axial, blue or black, date only</label>
     <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new, sold</label>
     <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
   <div id="st"></div><div id="sum"></div><div id="grid"></div>
@@ -81,7 +82,7 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 </section>
 <button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button>
 <script>
-const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElementById(id);
+const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=id=>document.getElementById(id);
 const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=l=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(Q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const MODES={
@@ -89,7 +90,7 @@ const MODES={
    return[{url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true,st:"大阪心斎橋店"},
     {url:"https://komehyo.jp/watch-mens/?q="+kq+"&sortKey=02",tag:"KOMEHYO",gen:true},{url:"https://komehyo.jp/watch-mens/?q="+kq+"&sortKey=02&page=2",tag:"KOMEHYO",gen:true},
     {url:kk+"1",tag:"Kame-kichi"},{url:kk+"2",tag:"Kame-kichi"},{url:kk+"3",tag:"Kame-kichi"},
-    {url:"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent("シーマスター ダイバー300M"),tag:"OKURA ONLINE"},
+    {url:"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent("シーマスター ダイバー300M コーアクシャル"),tag:"OKURA ONLINE"},
     ...L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}))]}},
  japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),alt:yp(),tag:"Japan"}]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis",fl:true}]}};
@@ -101,11 +102,11 @@ $("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data
 $("menu").onclick=e=>{const b=e.target.closest(".opt");if(b)open(b.dataset.k)};
 $("back").onclick=()=>{L.set("mode",null);$("app").hidden=true;$("menu").hidden=false};
 $("max").value=L.get("max",800000);
-["max","sort","junk","onlynew","mv","stock"].forEach(i=>$(i).onchange=()=>{L.set("max",+$("max").value||0);render()});
+["max","sort","junk","onlynew","spec","mv","stock"].forEach(i=>$(i).onchange=()=>{L.set("max",+$("max").value||0);render()});
 $("u").onclick=update;
 const enc=encodeURIComponent(Q);
 $("l1").href="https://jp.mercari.com/search?keyword="+enc+"&sort=created_time&order=desc";
-$("l2").href="https://www.chrono24.jp/search/index.htm?query="+encodeURIComponent("Omega Seamaster Diver 300M");
+$("l2").href="https://www.chrono24.jp/search/index.htm?query="+encodeURIComponent("Omega Seamaster Diver 300M Co-Axial");
 $("l3").href="https://www.komehyo.jp/search/?q="+enc;$("l4").href="https://www.2ndstreet.jp/search?keyword="+enc;
 
 function open(k){
@@ -211,9 +212,22 @@ renderShops();
 $("cua").onclick=()=>{const u=$("cu").value.trim();try{new URL(u)}catch(e){$("st").textContent="That doesn't look like a web address.";return}const c=L.get("custom",[]);if(!c.includes(u))c.push(u);L.set("custom",c);$("cu").value="";update()};
 $("cuc").onclick=()=>{L.set("custom",[]);update()};
 const mov=n=>/クォーツ|クオーツ|quartz/i.test(n)?"quartz":/自動巻|オートマ|automatic|コーアクシャル|co-axial|マスタークロノメーター|\b(?:210|212|215|233|234)\.\d\d\./i.test(n)?"auto":"";
+const ref=n=>{const m=n.match(/\b(2[01]\d)\.?(\d{2})\.?(\d{2})\.?(\d{2})\.?0?(\d{2})\.?(\d{3})\b/);return m?m.slice(1):null};
+function spec(n){
+  const f=ref(n);
+  if(/クォーツ|クオーツ|quartz/i.test(n))return"not Co-Axial";
+  if(!(/コーアクシャル|co-?axial|マスタークロノメーター|master chronometer/i.test(n)||(f&&(f[0]==="210"||f[0]==="212"))||/\b22(?:20|22|30)\.\d\d\b/.test(n)))return"not Co-Axial";
+  if(f&&f[0]!=="210"&&f[0]!=="212")return"other model";
+  if(/アクアテラ|aqua ?terra|プラネット|planet|ploprof|プロプロフ|スピードマスター|speedmaster|シーマスター\s*300(?!\s*M)(?!ダイバー)/i.test(n)&&!/ダイバー|diver/i.test(n))return"other model";
+  if(/クロノグラフ|chronograph|GMT|ジーエムティー/i.test(n)||(f&&f[3]!=="20"))return"has a complication";
+  if(f){if(f[4]!=="01"&&f[4]!=="03")return"other dial colour"}
+  else{const bad=/ホワイト|白|white|グリーン|緑|green|グレー|灰|gr[ae]y|オレンジ|orange|イエロー|黄|ピンク|pink|シルバー|silver|ブラウン|茶|brown|レッド|赤|red/i.test(n),good=/ブラック|黒|black|ブルー|青|blue|ネイビー|navy/i.test(n);if(bad&&!good)return"other dial colour"}
+  return"";
+}
 function why(i,o){
   const n=N(i.t);
-  if(!(/シーマスター|seamaster/i.test(n)&&/300|ダイバー|diver/i.test(n)))return"other models";
+  if(!(/シーマスター|seamaster/i.test(n)&&/300|ダイバー|diver/i.test(n)))return"not a Diver 300M";
+  if(o.sp){const r=spec(n);if(r)return r}
   if(o.j){if(JUNK.test(n))return"new, unused or parts";if(i.s||!(i.p>0))return"sold out or no price"}
   if(o.stock==="floor"&&!i.fl)return"not on a shop floor";
   if(i.area===false)return"stock outside the area";
@@ -222,7 +236,7 @@ function why(i,o){
   if(o.nw&&!i.n)return"not new";return"";
 }
 function render(note=""){
-  const o={max:+$("max").value||0,j:$("junk").checked,nw:$("onlynew").checked,mv:$("mv").value,stock:$("stock").value},s=$("sort").value,by={};let v=[];
+  const o={max:+$("max").value||0,j:$("junk").checked,nw:$("onlynew").checked,sp:$("spec").checked,mv:$("mv").value,stock:$("stock").value},s=$("sort").value,by={};let v=[];
   S.items.forEach(i=>{const r=why(i,o),b=by[i.tag]=by[i.tag]||{n:0,ok:0,r:{}};b.n++;if(r)b.r[r]=(b.r[r]||0)+1;else{b.ok++;v.push(i)}});
   if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9)));
   $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";

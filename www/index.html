@@ -58,6 +58,7 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 .sr{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
 .sr a{color:var(--navy2);font-weight:600;margin-left:12px;white-space:nowrap}
 .add{display:flex;gap:8px;padding:12px 0 14px;border-top:1px solid var(--line)}.add input{flex:1;min-width:0;border:1px solid #b9c4cd;border-radius:8px;padding:8px}
+#sum{font-size:12.5px;color:var(--mute);background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 14px}#sum:empty{display:none}#sum div{padding:3px 0}#sum b{color:var(--ink)}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><main>
@@ -70,9 +71,11 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
   <div class="filters">
     <label>Max price ¥ <input id="max" type="number" step="50000" min="0" style="width:110px"></label>
     <label>Sort <select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></label>
+    <label>Movement <select id="mv"><option value="">Automatic or quartz</option><option value="auto">Automatic</option><option value="quartz">Quartz</option></select></label>
+    <label>Stock <select id="stock"><option value="">Shop floors + online store</option><option value="floor">Shop floors only</option></select></label>
     <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new, sold</label>
     <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
-  <div id="st"></div><div id="grid"></div>
+  <div id="st"></div><div id="sum"></div><div id="grid"></div>
   <details id="dir" hidden><summary>Brick-and-mortar watch shops within 200 km (<span id="dn"></span>)</summary><div id="shops"></div><div class="add"><input id="cu" type="url" placeholder="Paste a shop's stock page to add it to the search"><button class="btn" id="cua">Add</button><button class="btn ghost" id="cuc">Clear added</button></div></details>
   <div class="links">More searches: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
 </section>
@@ -82,9 +85,14 @@ const Q="オメガ シーマスター ダイバー300M",$=id=>document.getElemen
 const ya=l=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(Q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=l=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(Q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const MODES={
- area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops only, from Kyoto and Kobe to Nagoya and Okayama",jobs:()=>[{url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN Osaka"},...L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}))]},
+ area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops only: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:()=>{const kq=encodeURIComponent("シーマスターダイバー300M"),kk="https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page=";
+   return[{url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true,st:"大阪心斎橋店"},
+    {url:"https://komehyo.jp/watch-mens/?q="+kq+"&sortKey=02",tag:"KOMEHYO",gen:true},{url:"https://komehyo.jp/watch-mens/?q="+kq+"&sortKey=02&page=2",tag:"KOMEHYO",gen:true},
+    {url:kk+"1",tag:"Kame-kichi"},{url:kk+"2",tag:"Kame-kichi"},{url:kk+"3",tag:"Kame-kichi"},
+    {url:"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent("シーマスター ダイバー300M"),tag:"OKURA ONLINE"},
+    ...L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}))]}},
  japan:{name:"All of Japan, including online",sub:"Every prefecture plus online sellers",jobs:()=>[{url:ya(),alt:yp(),tag:"Japan"}]},
- takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis"}]}};
+ takayama:{name:"Takayama pawn shop",sub:"Fukuoka area, one shop only (takayama78online.jp)",jobs:()=>[{url:"https://takayama78online.jp/shop/c/c105020/",tag:"Takayama",enc:"shift_jis",fl:true}]}};
 const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={mode:null,items:[],when:0};
 const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品(?!同様)|未使用|のみ$|互換|汎用|対応|シーマスター\s*コマ|コマ\s*\d+\s*コマ|文字板/;
@@ -93,7 +101,7 @@ $("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data
 $("menu").onclick=e=>{const b=e.target.closest(".opt");if(b)open(b.dataset.k)};
 $("back").onclick=()=>{L.set("mode",null);$("app").hidden=true;$("menu").hidden=false};
 $("max").value=L.get("max",800000);
-["max","sort","junk","onlynew"].forEach(i=>$(i).onchange=()=>{L.set("max",+$("max").value||0);render()});
+["max","sort","junk","onlynew","mv","stock"].forEach(i=>$(i).onchange=()=>{L.set("max",+$("max").value||0);render()});
 $("u").onclick=update;
 const enc=encodeURIComponent(Q);
 $("l1").href="https://jp.mercari.com/search?keyword="+enc+"&sort=created_time&order=desc";
@@ -114,7 +122,7 @@ async function get(url,enc){
     const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
   }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
 }
-const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/U-/;
+const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/U-|\/items\/\d+|\/products\/\d+/;
 function pic(b,base){
   for(const i of b.querySelectorAll("img")){
     for(const k of ["data-src","data-original","data-lazy-src","src"]){
@@ -131,15 +139,20 @@ function parseA(html,base,tag,gen){
     let b=a;while(b.parentElement&&b.parentElement!==d.body){
       const n=new Set([...b.parentElement.querySelectorAll("a[href]")].filter(x=>isI(x.getAttribute("href").split("?")[0],x)).map(x=>x.getAttribute("href").split("?")[0]));
       if(n.size>1)break;b=b.parentElement}
-    const txt=b.textContent.replace(/\s+/g," ");
-    const m=txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/現在\s*([\d,]+)\s*円/)||txt.match(/即決\s*([\d,]+)\s*円/)||txt.match(/¥\s*([\d,]{4,})/)||txt.match(/([\d,]{4,})\s*円/);
+    const txt=b.textContent.normalize("NFKC").replace(/\s+/g," ");
+    const tx=[...txt.matchAll(/(?:¥\s*([\d,]{4,})\s*\(\s*税込|([\d,]{4,})\s*円\s*\(\s*税込)/g)].pop();
+    const m=tx?[0,tx[1]||tx[2]]:(txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/現在\s*([\d,]+)\s*円/)||txt.match(/即決\s*([\d,]+)\s*円/)||txt.match(/¥\s*([\d,]{4,})/)||txt.match(/([\d,]{4,})\s*円/));
     if(gen&&!m)return;
-    const t=[...b.querySelectorAll("a[href]")].filter(x=>{try{return new URL(x.getAttribute("href"),base).href.split("?")[0]===h}catch(e){return false}})
-      .map(x=>(x.getAttribute("title")||x.textContent).trim()).sort((p,q)=>q.length-p.length)[0]||"";
+    let t=[...b.querySelectorAll("a[href]")].filter(x=>{try{return new URL(x.getAttribute("href"),base).href.split("?")[0]===h}catch(e){return false}}).map(x=>(x.getAttribute("title")||x.textContent).trim()).sort((p,q)=>q.length-p.length)[0]||"";
+    t=t.normalize("NFKC").replace(/\s+/g," ").split(/\s(?:OMEGA\s*)?(?:ランク|Rank)[:：]/i)[0].replace(/^(.{8,}?)\s+\1(?=\s|$)/,"$1").trim();
     if(t.length<4)return;
-    out.push({h,t:t.replace(/\s+/g," "),img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,s:/SOLD ?OUT|在庫切れ|商談中|売約|売り切れ/i.test(txt),tag});
+    const sm=txt.match(/在庫店舗[:：]\s*(.+?)(?:\s*参考上代|\s*¥|$)/)||txt.match(/在庫(?:有|あり)\s*\/\s*([^\s¥(]+)/);
+    out.push({h,t,img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,s:/SOLD ?OUT|在庫切れ|在庫なし|Out Of Stock|商談中|売約|売り切れ/i.test(txt),st:sm?sm[1].trim():"",tag});
   });return out;
 }
+const ONLINE=/オンライン|ONLINE|ネット|通販/i,IN=/梅田|心斎橋|大阪|OSAKA|SHINSAIBASHI|UMEDA|名古屋|名駅|NAGOYA|MEIEKI|京都|KYOTO|神戸|三宮|KOBE|奈良|NARA|大津|滋賀|和歌山|姫路|岡山|全店舗|オンライン|ONLINE/i,OUT=/新宿|渋谷|東京|中野|福岡|天神|SHINJUKU|SHIBUYA|TOKYO|FUKUOKA/i;
+const areaOf=t=>IN.test(t)?true:OUT.test(t)?false:undefined;
+const enSt=t=>t.replace(/梅田/,"Umeda").replace(/心斎橋/,"Shinsaibashi").replace(/名古屋本館/,"Nagoya Main Building").replace(/名古屋/,"Nagoya").replace(/名駅/,"Meieki").replace(/大阪/,"Osaka").replace(/全店舗/,"All stores").replace(/東京/,"Tokyo").replace(/福岡/,"Fukuoka").replace(/店/g," store").replace(/([a-z])([A-Z])/g,"$1 $2").replace(/\s+/g," ").trim();
 function mine(html,tag){
   const out=[],seen=new Set();
   const take=o=>{
@@ -170,7 +183,7 @@ async function update(){
   const jobs=MODES[S.mode].jobs(),info=[];
   $("u").disabled=true;$("st").textContent="Checking "+jobs.length+" source"+(jobs.length>1?"s":"")+"…";
   $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
-  const res=await Promise.allSettled(jobs.map(async j=>{let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag,j.gen);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag,j.gen)}info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");return it}));
+  const res=await Promise.allSettled(jobs.map(async j=>{let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag,j.gen);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag,j.gen)}info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");it.forEach(x=>{x.st=x.st||j.st||"";x.fl=x.st?!ONLINE.test(x.st):!!j.fl;x.area=x.st?areaOf(x.st):undefined});return it}));
   const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
   if(!ok.length){$("st").textContent="Update failed: "+bad[0].reason.message;render();$("u").disabled=false;return}
   const u=new Map(),lists=ok.map(r=>r.value);
@@ -186,30 +199,41 @@ const N=t=>t.normalize("NFKC");
 const GL=[["オメガ","Omega"],["シーマスター","Seamaster"],["ダイバー","Diver"],["プロフェッショナル","Professional"],["コーアクシャル","Co-Axial"],["マスタークロノメーター","Master Chronometer"],["クロノメーター","Chronometer"],["クロノグラフ","Chronograph"],["自動巻き","Automatic"],["自動巻","Automatic"],["クォーツ","Quartz"],["クオーツ","Quartz"],["腕時計","Watch"],["メンズ","Men's"],["ボーイズ","Boys'"],["レディース","Ladies'"],["ブルー","Blue"],["ブラック","Black"],["グリーン","Green"],["ホワイト","White"],["青文字盤","Blue dial"],["黒文字盤","Black dial"],["文字盤","dial"],["ステンレス","Stainless steel"],["チタン","Titanium"],["エディション","Edition"],["保証書","Warranty card"],["保証","Warranty"],["付属品","Accessories"],["余りコマ","Spare links"],["箱","Box"],["カード","Card"],["付き","Included"],["極美品","Mint"],["美品","Excellent"],["中古","Used"],["稼働品","Working"],["稼働","Working"],["完品","Complete set"],["送料無料","Free shipping"],["本体","Watch only"],["ブレスレット","Bracelet"],["ブレス","Bracelet"],["ベルト","Strap"],["ラバー","Rubber"],["デイト","Date"],["日付","Date"],["ダイビング","Diving"],["ヘリウム","Helium"],["オーバーホール済","Serviced"],["オーバーホール","Overhaul"],["動作確認済","Tested"],["ケース","Case"],["限定","Limited"],["ランク","Grade"],["品","item"]].sort((a,b)=>b[0].length-a[0].length);
 const GM=Object.fromEntries(GL),GR=new RegExp(GL.map(x=>x[0]).join("|"),"g");
 const en=t=>N(t).replace(GR,m=>" "+GM[m]+" ").replace(/[【】『』「」★☆◆◇■□●○]/g," ").replace(/\s+/g," ").trim();
-const SHOPS="Watchnian Osaka Honten|34.6732|135.5015|Osaka Shinsaibashi|ChIJ0QLOLHfnAGARoQrsBoLj0es;WATCHNIAN Shinsaibashi|34.6721|135.5015|Osaka Shinsaibashi|ChIJfcR5S7TnAGAR_UyPo_YG1Mc;TOKIOKA|34.6742|135.5014|Osaka Shinsaibashi|ChIJ64lvwxbnAGARVFH5i2k7Cmk;GINZA RASIN Shinsaibashi|34.6696|135.5000|Osaka Shinsaibashi|ChIJ81z37-_nAGARlXKGFmsvUbw;Quark Shinsaibashi|34.6757|135.5013|Osaka Shinsaibashi|ChIJ0fJjBBrnAGARFDjZ5xRwdEE;OKURA Osaka Main Store|34.6697|135.5011|Osaka Shinsaibashi|ChIJc9RbC3fnAGARJTvd3s9P9Mw;OKURA Shinsaibashi Watch Store|34.6730|135.5019|Osaka Shinsaibashi|ChIJP6VJmJPnAGAR39ByrI0j7B8;Yukizaki Shinsaibashi|34.6703|135.5012|Osaka Shinsaibashi|ChIJ48RD8ILnAGARUf1d9cDYcAs;Daikokuya Brandkan Shinsaibashi|34.6703|135.5013|Osaka Shinsaibashi|ChIJJ2ru_BPnAGARV0QAbqOKwzE;Brand Gallery Higashi-Shinsaibashi|34.6734|135.5029|Osaka Shinsaibashi|ChIJbboWflvnAGARVOI4dgC0P1Q;Hatsukindo (vintage)|34.6825|135.5011|Osaka Minamihonmachi|ChIJwY-22h3nAGAR89MTgPxAOao;BEST VINTAGE Grand Front|34.7041|135.4947|Osaka Umeda|ChIJo9RAwNbnAGARDJizskmHO-I;Watch Colle (vintage)|34.6991|135.4967|Osaka Umeda|ChIJH3TKoPLmAGARaCmoF3O5jhg;Komehyo Umeda|34.7054|135.4963|Osaka Umeda|ChIJwz6jPI7mAGARAFNIdio3TKM;Brand Off Umeda|34.7052|135.4960|Osaka Umeda|ChIJpcPEZ5_nAGARlTb3rIbfSHk;OKURA Kyoto Karasuma|35.0051|135.7620|Kyoto|ChIJ76gav7te0IQRQ9_KVSLVxKY;Big Moon Kyoto|35.0061|135.7599|Kyoto|ChIJFcvkgKwJAWAR7HRR1hxj-ws;Quark Kyoto|35.0084|135.7692|Kyoto|ChIJA0Ut4_EJAWARHSm5q9MwlDc;JBWORKS Gomas Shinkyogoku|35.0046|135.7672|Kyoto|ChIJDdC0clwJAWARlFt0jku9G-k;Brand Off Kyoto|35.0050|135.7694|Kyoto|ChIJz-rdHZUIAWARMBUWX7gIYjc;THE WATCH 911|34.6915|135.1878|Kobe|ChIJZ2VFlOKOAGAR12OsT3sMoQk;Komehyo Kobe Sannomiya|34.6908|135.1929|Kobe|ChIJhT5YkfqOAGAR0Erb-jYh8pU;KINGRAM Kobe Sannomiya|34.6919|135.1941|Kobe|ChIJZ8PrVAWPAGAR8gxTUg0YvZI;Reference Kobe|34.6899|135.1893|Kobe|ChIJt053IP2OAGARbwyD6qzK44I;Quark Kobe|34.6913|135.1932|Kobe|ChIJd9XLFvuOAGARFx1-pheyFEo;RESUME (vintage)|34.6798|135.8258|Nara|ChIJk0wfJ2M7AWARgHmDnLKIf5U;Antique Watch Life|34.5785|135.6991|Nara (Oji)|ChIJoc7E_movAWAR2L71Fi28p30;Brand Off Otsu Terrace|35.0045|135.8792|Otsu, Shiga|ChIJfYZu6ZYNAWARZi6LVRxw6qw;Kyoto Pawn Shop Otsu|35.0119|135.8621|Otsu, Shiga|ChIJbYMAxWAMAWARoxtMHCA3KE4;Big Moon Nagoya|35.1619|136.9042|Nagoya|ChIJOY_UHs1wA2ARmLtm8ANRHgw;Watchnian Nagoya|35.1591|136.9015|Nagoya|ChIJjeyllIB3A2ARq8aTIFTxcCQ;Komehyo Nagoya Main Store|35.1594|136.9020|Nagoya|ChIJownIQDN3A2ARAXxkzCaiWZA;Quark Nagoya Sakae|35.1688|136.9065|Nagoya|ChIJ0-hgutNwA2ARWyGgIFdFc9g;Universal Value Nagoya|35.1590|136.9026|Nagoya|ChIJJ72sKA53A2ARz3WEoSvs03w;Brand Off Nagoya Osu|35.1601|136.9021|Nagoya|ChIJ_bL7JDN3A2ARYuECiJpVo6E;Tomiya Mecamuseum|34.6609|133.9291|Okayama|ChIJS5gTcTQGVDURk6yoIFM4tCQ;HANDA Watch World|34.6660|133.9214|Okayama|ChIJL1192GAHVDURw5ueYQfbIpg;Pawn Shop RiZ|34.6419|133.9031|Okayama|ChIJkcOxzHkHVDURAFbuC-Fa9kg";
+const SHOPS="Watchnian Osaka Honten|34.6732|135.5015|Osaka Shinsaibashi|ChIJ0QLOLHfnAGARoQrsBoLj0es;WATCHNIAN Shinsaibashi|34.6721|135.5015|Osaka Shinsaibashi|ChIJfcR5S7TnAGAR_UyPo_YG1Mc;TOKIOKA|34.6742|135.5014|Osaka Shinsaibashi|ChIJ64lvwxbnAGARVFH5i2k7Cmk;GINZA RASIN Shinsaibashi|34.6696|135.5000|Osaka Shinsaibashi|ChIJ81z37-_nAGARlXKGFmsvUbw;Quark Shinsaibashi|34.6757|135.5013|Osaka Shinsaibashi|ChIJ0fJjBBrnAGARFDjZ5xRwdEE;OKURA Osaka Main Store|34.6697|135.5011|Osaka Shinsaibashi|ChIJc9RbC3fnAGARJTvd3s9P9Mw;OKURA Shinsaibashi Watch Store|34.6730|135.5019|Osaka Shinsaibashi|ChIJP6VJmJPnAGAR39ByrI0j7B8;Yukizaki Shinsaibashi|34.6703|135.5012|Osaka Shinsaibashi|ChIJ48RD8ILnAGARUf1d9cDYcAs;Daikokuya Brandkan Shinsaibashi|34.6703|135.5013|Osaka Shinsaibashi|ChIJJ2ru_BPnAGARV0QAbqOKwzE;Brand Gallery Higashi-Shinsaibashi|34.6734|135.5029|Osaka Shinsaibashi|ChIJbboWflvnAGARVOI4dgC0P1Q;Hatsukindo (vintage)|34.6825|135.5011|Osaka Minamihonmachi|ChIJwY-22h3nAGAR89MTgPxAOao;BEST VINTAGE Grand Front|34.7041|135.4947|Osaka Umeda|ChIJo9RAwNbnAGARDJizskmHO-I;Watch Colle (vintage)|34.6991|135.4967|Osaka Umeda|ChIJH3TKoPLmAGARaCmoF3O5jhg;Komehyo Umeda|34.7054|135.4963|Osaka Umeda|ChIJwz6jPI7mAGARAFNIdio3TKM;Brand Off Umeda|34.7052|135.4960|Osaka Umeda|ChIJpcPEZ5_nAGARlTb3rIbfSHk;OKURA Kyoto Karasuma|35.0051|135.7620|Kyoto|ChIJ76gav7te0IQRQ9_KVSLVxKY;Big Moon Kyoto|35.0061|135.7599|Kyoto|ChIJFcvkgKwJAWAR7HRR1hxj-ws;Quark Kyoto|35.0084|135.7692|Kyoto|ChIJA0Ut4_EJAWARHSm5q9MwlDc;JBWORKS Gomas Shinkyogoku|35.0046|135.7672|Kyoto|ChIJDdC0clwJAWARlFt0jku9G-k;Brand Off Kyoto|35.0050|135.7694|Kyoto|ChIJz-rdHZUIAWARMBUWX7gIYjc;THE WATCH 911|34.6915|135.1878|Kobe|ChIJZ2VFlOKOAGAR12OsT3sMoQk;Komehyo Kobe Sannomiya|34.6908|135.1929|Kobe|ChIJhT5YkfqOAGAR0Erb-jYh8pU;KINGRAM Kobe Sannomiya|34.6919|135.1941|Kobe|ChIJZ8PrVAWPAGAR8gxTUg0YvZI;Reference Kobe|34.6899|135.1893|Kobe|ChIJt053IP2OAGARbwyD6qzK44I;Quark Kobe|34.6913|135.1932|Kobe|ChIJd9XLFvuOAGARFx1-pheyFEo;RESUME (vintage)|34.6798|135.8258|Nara|ChIJk0wfJ2M7AWARgHmDnLKIf5U;Antique Watch Life|34.5785|135.6991|Nara (Oji)|ChIJoc7E_movAWAR2L71Fi28p30;Brand Off Otsu Terrace|35.0045|135.8792|Otsu, Shiga|ChIJfYZu6ZYNAWARZi6LVRxw6qw;Kyoto Pawn Shop Otsu|35.0119|135.8621|Otsu, Shiga|ChIJbYMAxWAMAWARoxtMHCA3KE4;Big Moon Nagoya|35.1619|136.9042|Nagoya|ChIJOY_UHs1wA2ARmLtm8ANRHgw;Watchnian Nagoya|35.1591|136.9015|Nagoya|ChIJjeyllIB3A2ARq8aTIFTxcCQ;Komehyo Nagoya Main Store|35.1594|136.9020|Nagoya|ChIJownIQDN3A2ARAXxkzCaiWZA;Quark Nagoya Sakae|35.1688|136.9065|Nagoya|ChIJ0-hgutNwA2ARWyGgIFdFc9g;Universal Value Nagoya|35.1590|136.9026|Nagoya|ChIJJ72sKA53A2ARz3WEoSvs03w;Brand Off Nagoya Osu|35.1601|136.9021|Nagoya|ChIJ_bL7JDN3A2ARYuECiJpVo6E;Tomiya Mecamuseum|34.6609|133.9291|Okayama|ChIJS5gTcTQGVDURk6yoIFM4tCQ;HANDA Watch World|34.6660|133.9214|Okayama|ChIJL1192GAHVDURw5ueYQfbIpg;Pawn Shop RiZ|34.6419|133.9031|Okayama|ChIJkcOxzHkHVDURAFbuC-Fa9kg;Kame-kichi Osaka Shinsaibashi|34.6735|135.5000|Osaka Shinsaibashi|;KOMEHYO Osaka Shinsaibashi (new store)|34.6725|135.5010|Osaka Shinsaibashi|";
 const HQ=[34.6937,135.5023],rad=x=>x*Math.PI/180;
 const km=(a,b)=>{const q=Math.sin(rad(a-HQ[0])/2)**2+Math.cos(rad(HQ[0]))*Math.cos(rad(a))*Math.sin(rad(b-HQ[1])/2)**2;return 12742*Math.asin(Math.sqrt(q))};
 function renderShops(){
   const rows=SHOPS.split(";").map(x=>{const f=x.split("|");return{n:f[0],c:f[3],id:f[4],d:km(+f[1],+f[2])}}).filter(r=>r.d<=200).sort((a,b)=>a.d-b.d);
   $("dn").textContent=rows.length;
-  $("shops").innerHTML=rows.map(r=>`<div class="sr"><div><b>${r.n}</b><div class="sub">${r.c} · ${Math.round(r.d)} km from Osaka</div></div><div><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n)}&query_place_id=${r.id}">Map</a><a target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(r.n+" オメガ シーマスター ダイバー300M")}">Search stock</a></div></div>`).join("");
+  $("shops").innerHTML=rows.map(r=>`<div class="sr"><div><b>${r.n}</b><div class="sub">${r.c} · ${Math.round(r.d)} km from Osaka</div></div><div><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n)}${r.id?"&query_place_id="+r.id:""}">Map</a><a target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(r.n+" オメガ シーマスター ダイバー300M")}">Search stock</a></div></div>`).join("");
 }
 renderShops();
 $("cua").onclick=()=>{const u=$("cu").value.trim();try{new URL(u)}catch(e){$("st").textContent="That doesn't look like a web address.";return}const c=L.get("custom",[]);if(!c.includes(u))c.push(u);L.set("custom",c);$("cu").value="";update()};
 $("cuc").onclick=()=>{L.set("custom",[]);update()};
+const mov=n=>/クォーツ|クオーツ|quartz/i.test(n)?"quartz":/自動巻|オートマ|automatic|コーアクシャル|co-axial|マスタークロノメーター|\b(?:210|212|215|233|234)\.\d\d\./i.test(n)?"auto":"";
+function why(i,o){
+  const n=N(i.t);
+  if(!(/シーマスター|seamaster/i.test(n)&&/300|ダイバー|diver/i.test(n)))return"other models";
+  if(o.j){if(JUNK.test(n))return"new, unused or parts";if(i.s||!(i.p>0))return"sold out or no price"}
+  if(o.stock==="floor"&&!i.fl)return"not on a shop floor";
+  if(i.area===false)return"stock outside the area";
+  if(o.max&&i.p>o.max)return"over the max price";
+  const m=mov(n);if((o.mv==="auto"&&m==="quartz")||(o.mv==="quartz"&&m==="auto"))return"other movement";
+  if(o.nw&&!i.n)return"not new";return"";
+}
 function render(note=""){
-  const max=+$("max").value||0,j=$("junk").checked,nw=$("onlynew").checked;
-  let v=S.items.filter(i=>/シーマスター|seamaster/i.test(N(i.t))&&/300|ダイバー|diver/i.test(N(i.t)));
-  if(j)v=v.filter(i=>!JUNK.test(N(i.t))&&!i.s&&i.p>0);
-  if(max)v=v.filter(i=>!i.p||i.p<=max);if(nw)v=v.filter(i=>i.n);
-  const s=$("sort").value;if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9))*(s==="lo"?1:1));
+  const o={max:+$("max").value||0,j:$("junk").checked,nw:$("onlynew").checked,mv:$("mv").value,stock:$("stock").value},s=$("sort").value,by={};let v=[];
+  S.items.forEach(i=>{const r=why(i,o),b=by[i.tag]=by[i.tag]||{n:0,ok:0,r:{}};b.n++;if(r)b.r[r]=(b.r[r]||0)+1;else{b.ok++;v.push(i)}});
+  if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a.p||9e9)-(b.p||9e9)));
   $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";
   if(S.when||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings shown";
+  $("sum").innerHTML=Object.entries(by).map(([t,b])=>"<div><b>"+t+"</b>: "+b.n+" scanned, "+b.ok+" shown"+(Object.keys(b.r).length?" · left out: "+Object.entries(b.r).map(([k,c])=>c+" "+k).join(", "):"")+"</div>").join("");
   $("grid").innerHTML="";
   v.forEach(i=>{const c=document.createElement("div");c.className="c";
     c.innerHTML='<a class="m" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" alt=""><div class="i"><div class="t"></div><div class="o"></div><div class="p"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"");
-    const a=c.querySelector(".m");a.href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}{const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
-    c.querySelector(".p").textContent=i.p?"¥"+i.p.toLocaleString():"Price on page";c.querySelector(".tag").textContent=i.tag;
+    c.querySelector(".m").href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}
+    {const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
+    c.querySelector(".p").textContent=i.p?"¥"+i.p.toLocaleString():"Price on page";c.querySelector(".tag").textContent=i.tag+(i.st&&i.st!==i.tag?" · "+enSt(i.st):"");
     c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);$("grid").appendChild(c)});
 }
 const TUNE={"n":[[0,38,3,0],[3,38,1,0],[6,45,2,0],[8,38,3,0],[11,50,1,0],[14,45,2,0],[0,74,3,1],[3,77,1,1],[4,81,3,1],[8,79,2,1],[10,77,2,1],[12,74,4,1],[4,62,2,2],[4,65,2,2],[4,69,2,2],[10,62,2,2],[10,65,2,2],[10,69,2,2],[16,38,3,0],[19,38,1,0],[22,45,2,0],[24,38,3,0],[27,50,1,0],[30,45,2,0],[16,76,3,1],[19,77,1,1],[20,74,3,1],[24,73,2,1],[26,74,2,1],[28,69,4,1],[20,62,2,2],[20,65,2,2],[20,69,2,2],[26,62,2,2],[26,65,2,2],[26,69,2,2],[32,43,3,0],[35,43,1,0],[38,50,2,0],[40,43,3,0],[43,55,1,0],[46,50,2,0],[32,70,3,1],[35,74,1,1],[36,77,3,1],[40,76,2,1],[42,74,2,1],[44,70,4,1],[36,67,2,2],[36,70,2,2],[36,74,2,2],[42,67,2,2],[42,70,2,2],[42,74,2,2],[48,45,3,0],[51,45,1,0],[54,52,2,0],[56,45,3,0],[59,57,1,0],[62,52,2,0],[48,73,3,1],[51,76,1,1],[52,79,3,1],[56,77,2,1],[58,76,2,1],[60,73,2,1],[62,69,2,1],[52,57,2,2],[52,61,2,2],[52,64,2,2],[52,67,2,2],[58,57,2,2],[58,61,2,2],[58,64,2,2],[58,67,2,2],[64,38,3,0],[67,38,1,0],[70,45,2,0],[72,38,3,0],[75,50,1,0],[78,45,2,0],[64,81,3,1],[67,77,1,1],[68,74,3,1],[72,77,2,1],[74,81,2,1],[76,74,4,1],[68,62,2,2],[68,65,2,2],[68,69,2,2],[74,62,2,2],[74,65,2,2],[74,69,2,2],[80,46,3,0],[83,46,1,0],[86,53,2,0],[88,46,3,0],[91,58,1,0],[94,53,2,0],[80,77,3,1],[83,74,1,1],[84,70,3,1],[88,74,2,1],[90,77,2,1],[92,82,4,1],[84,58,2,2],[84,62,2,2],[84,65,2,2],[90,58,2,2],[90,62,2,2],[90,65,2,2],[96,45,3,0],[99,45,1,0],[102,52,2,0],[104,45,3,0],[107,57,1,0],[110,52,2,0],[96,81,2,1],[98,79,2,1],[100,76,2,1],[102,73,2,1],[104,76,4,1],[108,73,4,1],[100,57,2,2],[100,61,2,2],[100,64,2,2],[100,67,2,2],[106,57,2,2],[106,61,2,2],[106,64,2,2],[106,67,2,2],[112,38,3,0],[115,38,1,0],[118,45,2,0],[120,38,3,0],[123,50,1,0],[126,45,2,0],[112,74,8,1],[120,69,4,1],[124,74,2,1],[126,69,2,1],[116,62,2,2],[116,65,2,2],[116,69,2,2],[122,62,2,2],[122,65,2,2],[122,69,2,2]],"d":[[0,0],[6,0],[8,0],[4,2],[12,2],[0,1],[2,1],[4,1],[6,1],[8,1],[10,1],[12,1],[14,1],[16,0],[22,0],[24,0],[20,2],[28,2],[16,1],[18,1],[20,1],[22,1],[24,1],[26,1],[28,1],[30,1],[32,0],[38,0],[40,0],[36,2],[44,2],[32,1],[34,1],[36,1],[38,1],[40,1],[42,1],[44,1],[46,1],[48,0],[54,0],[56,0],[52,2],[60,2],[48,1],[50,1],[52,1],[54,1],[56,1],[58,1],[60,1],[62,1],[64,0],[70,0],[72,0],[68,2],[76,2],[64,1],[66,1],[68,1],[70,1],[72,1],[74,1],[76,1],[78,1],[80,0],[86,0],[88,0],[84,2],[92,2],[80,1],[82,1],[84,1],[86,1],[88,1],[90,1],[92,1],[94,1],[96,0],[102,0],[104,0],[100,2],[108,2],[96,1],[98,1],[100,1],[102,1],[104,1],[106,1],[108,1],[110,1],[112,0],[118,0],[120,0],[116,2],[124,2],[112,1],[114,1],[116,1],[118,1],[120,1],[122,1],[124,1],[126,1]]};

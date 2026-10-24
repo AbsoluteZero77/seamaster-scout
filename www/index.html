@@ -83,7 +83,8 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
     <label><input type="checkbox" id="showall"> Show filtered-out (greyed)</label>
     <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new, sold</label>
     <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
-  <div id="st"></div><div id="sum"></div><div id="grid"></div>
+  <div id="st"></div><div id="sum"></div>
+  <details id="dg" hidden><summary>Source check (what each site returned)</summary><div id="dgl"></div></details><div id="grid"></div>
   <details id="dir" hidden><summary>Brick-and-mortar watch shops within 200 km (<span id="dn"></span>)</summary><div id="shops"></div><div class="add"><input id="cu" type="url" placeholder="Paste a shop's stock page to add it to the search"><button class="btn" id="cua">Add</button><button class="btn ghost" id="cuc">Clear added</button></div></details>
   <div class="links">More searches: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
 </section>
@@ -92,7 +93,8 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=id=>document.getElementById(id);
 const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.omega.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
-const tk=ws=>ws.map(k=>({url:k==="omega"?"https://takayama78online.jp/shop/c/c105020/":"https://takayama78online.jp/shop/goods/search.aspx?search=x&name="+encodeURIComponent(k==="tudor"?"ブラックベイ":"スーパーオーシャン"),tag:"Takayama",enc:"shift_jis",fl:true}));
+const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
+const tk=ws=>ws.map(k=>({url:TK[k],tag:"Takayama",enc:"shift_jis",fl:true}));
 function shopJobs(ws){
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
   const add=k=>{const W=WATCHES[k];for(const p of["","&page=2","&page=3"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
@@ -104,7 +106,7 @@ function shopJobs(ws){
 const custom=()=>L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}));
 const MODES={
  area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:ws=>[...shopJobs(ws),...custom()]},
- japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.map(k=>({url:ya(0,WATCHES[k].q),alt:yp(0,WATCHES[k].q),tag:"Yahoo Auctions"})),...shopJobs(ws),...tk(ws),...(ws.includes("omega")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"}]:[]),...custom()]},
+ japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.map(k=>({url:ya(0,WATCHES[k].q),alt:yp(0,WATCHES[k].q),tag:"Yahoo Auctions"})),...shopJobs(ws),...tk(ws),...(ws.includes("omega")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores, all three watches",jobs:ws=>tk(ws)}
 };
 
@@ -132,7 +134,7 @@ async function get(url,enc){
     const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
   }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
 }
-const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/U-|\/items\/\d+|\/products\/\d+/;
+const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/(?:U|z|used)-|\/items\/\d+|\/products\/[\w-]+|komehyo\.jp\/product\//;
 function pic(b,base){
   for(const i of b.querySelectorAll("img")){
     for(const k of ["data-src","data-original","data-lazy-src","src"]){
@@ -141,7 +143,7 @@ function pic(b,base){
   }return "";
 }
 function parseA(html,base,tag,gen){
-  const isI=(h,x)=>ITEM.test(h)||(gen&&!!x.querySelector("img"));
+  const isI=(h,x)=>ITEM.test(h)||(gen&&(!!x.querySelector("img")||/[¥￥]\s*[\d,]{4,}|[\d,]{4,}\s*円/.test(x.textContent)));
   const d=new DOMParser().parseFromString(html,"text/html"),seen=new Set(),out=[];
   d.querySelectorAll("a[href]").forEach(a=>{
     let h;try{h=new URL(a.getAttribute("href"),base).href.split("?")[0]}catch(e){return}
@@ -154,15 +156,15 @@ function parseA(html,base,tag,gen){
     const m=tx?[0,tx[1]||tx[2]]:(txt.match(/販売価格\s*([\d,]+)\s*円/)||txt.match(/現在\s*([\d,]+)\s*円/)||txt.match(/即決\s*([\d,]+)\s*円/)||txt.match(/¥\s*([\d,]{4,})/)||txt.match(/([\d,]{4,})\s*円/));
     if(gen&&!m)return;
     let t=[...b.querySelectorAll("a[href]")].filter(x=>{try{return new URL(x.getAttribute("href"),base).href.split("?")[0]===h}catch(e){return false}}).map(x=>(x.getAttribute("title")||x.textContent).trim()).sort((p,q)=>q.length-p.length)[0]||"";
-    t=t.normalize("NFKC").replace(/\s+/g," ").split(/\s(?:OMEGA\s*)?(?:ランク|Rank)[:：]/i)[0].replace(/^(.{8,}?)\s+\1(?=\s|$)/,"$1").trim();
+    t=t.normalize("NFKC").replace(/\s+/g," ").split(/\s(?:OMEGA\s*)?(?:ランク|Rank)[:：]/i)[0].replace(/^(.{8,}?)\s+\1(?=\s|$)/,"$1").trim();{const k=t.slice(0,10),j=t.indexOf(k,10);if(j>0)t=t.slice(0,j).trim()}
     if(t.length<4)return;
-    const sm=txt.match(/在庫店舗[:：]\s*(.+?)(?:\s*参考上代|\s*¥|$)/)||txt.match(/在庫(?:有|あり)\s*\/\s*([^\s¥(]+)/);
+    const sm=txt.match(/在庫店舗[:：]\s*(.+?)(?:\s*参考上代|\s*在庫[:：]|\s*¥|$)/)||txt.match(/在庫(?:有|あり)\s*\/\s*([^\s¥(]+)/);
     out.push({h,t,img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,s:/SOLD ?OUT|在庫切れ|在庫なし|Out Of Stock|商談中|売約|売り切れ/i.test(txt),st:sm?sm[1].trim():"",rk:((txt.match(/ランク[:：]\s*([A-Z]{1,2})/)||txt.match(/中古品([A-Z]{1,2})/))||[])[1]||"",tag});
   });return out;
 }
 const ONLINE=/オンライン|ONLINE|ネット|通販/i,IN=/梅田|心斎橋|大阪|OSAKA|SHINSAIBASHI|UMEDA|名古屋|名駅|NAGOYA|MEIEKI|京都|KYOTO|神戸|三宮|KOBE|奈良|NARA|大津|滋賀|和歌山|姫路|岡山|全店舗|オンライン|ONLINE/i,OUT=/銀座|新宿|渋谷|東京|中野|福岡|天神|SHINJUKU|SHIBUYA|TOKYO|FUKUOKA/i;
 const areaOf=t=>IN.test(t)?true:OUT.test(t)?false:undefined;
-const enSt=t=>t.replace(/梅田/,"Umeda").replace(/心斎橋/,"Shinsaibashi").replace(/名古屋本館/,"Nagoya Main Building").replace(/名古屋/,"Nagoya").replace(/名駅/,"Meieki").replace(/大阪/,"Osaka").replace(/全店舗/,"All stores").replace(/東京/,"Tokyo").replace(/福岡/,"Fukuoka").replace(/銀座本店/,"Ginza Main Store").replace(/新宿/,"Shinjuku").replace(/店/g," store").replace(/([a-z])([A-Z])/g,"$1 $2").replace(/\s+/g," ").trim();
+const enSt=t=>t.replace(/梅田/,"Umeda").replace(/心斎橋/,"Shinsaibashi").replace(/名古屋本館/,"Nagoya Main Building").replace(/名古屋/,"Nagoya").replace(/名駅/,"Meieki").replace(/大阪/,"Osaka").replace(/全店舗/,"All stores").replace(/東京/,"Tokyo").replace(/福岡/,"Fukuoka").replace(/販売/,"").replace(/春日/,"Kasuga").replace(/古賀/,"Koga").replace(/姪浜/,"Meinohama").replace(/久留米/,"Kurume").replace(/熊本/,"Kumamoto").replace(/博多/,"Hakata").replace(/銀座本店/,"Ginza Main Store").replace(/新宿/,"Shinjuku").replace(/店/g," store").replace(/([a-z])([A-Z])/g,"$1 $2").replace(/\s+/g," ").trim();
 function mine(html,tag){
   const out=[],seen=new Set();
   const take=o=>{
@@ -196,6 +198,8 @@ async function update(){
   $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
   const res=await Promise.allSettled(jobs.map(async j=>{let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag,j.gen);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag,j.gen)}info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");it.forEach(x=>{x.st=x.st||j.st||"";x.fl=x.st?!ONLINE.test(x.st):!!j.fl;x.area=x.st?areaOf(x.st):undefined});return it}));
   const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
+  const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  $("dg").hidden=false;$("dgl").innerHTML=res.map((r,i)=>'<div class="sr"><div><b>'+esc(jobs[i].tag)+'</b><div class="sub">'+esc(jobs[i].url.replace(/^https?:\/\/(www\.)?/,"").slice(0,58))+'</div></div><div>'+(r.status==="fulfilled"?r.value.length+" found":"error: "+esc(r.reason.message))+'</div></div>').join("");
   if(!ok.length){$("st").textContent="Update failed: "+bad[0].reason.message;render();$("u").disabled=false;return}
   const u=new Map(),lists=ok.map(r=>r.value);
   for(let k=0;;k++){let any=false;for(const l of lists)if(l[k]){any=true;u.has(l[k].h)||u.set(l[k].h,l[k])}if(!any)break}
@@ -239,8 +243,8 @@ function omegaSpec(n){
 }
 const WATCHES={
  omega:{name:"Omega Seamaster Diver 300M",q:"オメガ シーマスター ダイバー300M コーアクシャル",qs:"シーマスターダイバー300M",qo:"シーマスター ダイバー300M コーアクシャル",en:"Omega Seamaster Diver 300M Co-Axial",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:omegaSpec},
- tudor:{name:"Tudor Black Bay Pro",q:"チューダー ブラックベイ プロ",qs:"ブラックベイプロ",qo:"ブラックベイ プロ",en:"Tudor Black Bay Pro",is:/チューダー|チュードル|tudor|ブラックベイ|black ?bay/i,is2:/プロ|\bpro\b|79470/i,spec:()=>""},
- breitling:{name:"Breitling Superocean Heritage",q:"ブライトリング スーパーオーシャン ヘリテージ",qs:"スーパーオーシャンヘリテージ",qo:"スーパーオーシャン ヘリテージ",en:"Breitling Superocean Heritage",is:/ブライトリング|breitling|スーパーオーシャン|superocean|super ocean/i,is2:/ヘリテージ|heritage|A1732[01]|A1332\d|A2332\d|A1037\d|AB20[1-4]\d|AB01[56]\d/i,spec:()=>""}};
+ tudor:{name:"Tudor Black Bay Pro",q:"チューダー ブラックベイ プロ",qs:"ブラックベイプロ",qo:"ブラックベイ プロ",en:"Tudor Black Bay Pro",is:/チューダー|チュードル|tudor|ブラックベイ|black ?bay/i,is2:/ブラックベイ|black ?bay|79\d{3}/i,spec:n=>/プロ|\bpro\b|79470/i.test(n)?"":"not the Black Bay Pro"},
+ breitling:{name:"Breitling Superocean Heritage",q:"ブライトリング スーパーオーシャン ヘリテージ",qs:"スーパーオーシャンヘリテージ",qo:"スーパーオーシャン ヘリテージ",en:"Breitling Superocean Heritage",is:/ブライトリング|breitling|スーパーオーシャン|superocean|super ocean/i,is2:/スーパーオーシャン|superocean|super ocean|A1732[01]|AB20[1-4]\d/i,spec:n=>/ヘリテージ|heritage|A1732[01]|A1332[0-9]|A2332[0-9]|A1037[0-9]|AB20[1-4]\d|AB01[56]\d/i.test(n)?"":"not Heritage"}};
 const DEF={omega:["bb","date"],tudor:["",""],breitling:["",""],all:["",""]};
 function applyDef(){const d=DEF[S.w]||["",""];$("col").value=d[0];$("cmp").value=d[1]}
 function wk(n){for(const k in WATCHES){const W=WATCHES[k];if(W.is.test(n)&&W.is2.test(n))return k}return""}

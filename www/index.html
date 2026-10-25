@@ -95,9 +95,11 @@ const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURICompone
 const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
 const tk=ws=>ws.map(k=>({url:TK[k],tag:"Takayama",enc:"shift_jis",fl:true}));
+const WN={omega:"https://watchnian.com/shop/c/com-seama/?filtercode13=1&pagesize=100",tudor:"https://watchnian.com/shop/c/ctd-bb_ssp/?filtercode13=1&pagesize=100",breitling:"https://watchnian.com/shop/c/cbr-supoc/?filtercode13=1&pagesize=100"};
 function shopJobs(ws){
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
   const add=k=>{const W=WATCHES[k];for(const p of["","&page=2","&page=3"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
+  for(const k of ws)out.push({url:WN[k],tag:"WATCHNIAN",fl:true});
   if(ws.includes("omega")){out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});for(const n of[1,2,3])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});add("omega")}
   if(ws.includes("tudor")){out.push({url:"https://www.rasin.co.jp/SHOP/85111/156586/list.html",tag:"GINZA RASIN",fl:true});add("tudor")}
   if(ws.includes("breitling"))add("breitling");
@@ -159,12 +161,12 @@ function parseA(html,base,tag,gen){
     t=t.normalize("NFKC").replace(/\s+/g," ").split(/\s(?:OMEGA\s*)?(?:ランク|Rank)[:：]/i)[0].replace(/^(.{8,}?)\s+\1(?=\s|$)/,"$1").trim();{const k=t.slice(0,10),j=t.indexOf(k,10);if(j>0)t=t.slice(0,j).trim()}
     if(t.length<4)return;
     const sm=txt.match(/在庫店舗[:：]\s*(.+?)(?:\s*参考上代|\s*在庫[:：]|\s*¥|$)/)||txt.match(/在庫(?:有|あり)\s*\/\s*([^\s¥(]+)/);
-    out.push({h,t,img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,s:/SOLD ?OUT|在庫切れ|在庫なし|Out Of Stock|商談中|売約|売り切れ/i.test(txt),st:sm?sm[1].trim():"",rk:((txt.match(/ランク[:：]\s*([A-Z]{1,2})/)||txt.match(/中古品([A-Z]{1,2})/))||[])[1]||"",tag});
+    out.push({h,t,img:pic(b,base),p:m?parseInt(m[1].replace(/,/g,"")):0,s:/SOLD ?OUT|在庫切れ|在庫なし|Out Of Stock|商談中|売約|売り切れ/i.test(txt),st:sm?sm[1].trim():"",rk:((txt.match(/ランク[:：]\s*([A-Z]{1,2})/)||txt.match(/中古品([A-Z]{1,2})/)||txt.match(/中古\s([A-Z])\s/))||[])[1]||"",tag});
   });return out;
 }
 const ONLINE=/オンライン|ONLINE|ネット|通販/i,IN=/梅田|心斎橋|大阪|OSAKA|SHINSAIBASHI|UMEDA|名古屋|名駅|NAGOYA|MEIEKI|京都|KYOTO|神戸|三宮|KOBE|奈良|NARA|大津|滋賀|和歌山|姫路|岡山|全店舗|オンライン|ONLINE/i,OUT=/銀座|新宿|渋谷|東京|中野|福岡|天神|SHINJUKU|SHIBUYA|TOKYO|FUKUOKA/i;
 const areaOf=t=>IN.test(t)?true:OUT.test(t)?false:undefined;
-const enSt=t=>t.replace(/梅田/,"Umeda").replace(/心斎橋/,"Shinsaibashi").replace(/名古屋本館/,"Nagoya Main Building").replace(/名古屋/,"Nagoya").replace(/名駅/,"Meieki").replace(/大阪/,"Osaka").replace(/全店舗/,"All stores").replace(/東京/,"Tokyo").replace(/福岡/,"Fukuoka").replace(/販売/,"").replace(/春日/,"Kasuga").replace(/古賀/,"Koga").replace(/姪浜/,"Meinohama").replace(/久留米/,"Kurume").replace(/熊本/,"Kumamoto").replace(/博多/,"Hakata").replace(/銀座本店/,"Ginza Main Store").replace(/新宿/,"Shinjuku").replace(/店/g," store").replace(/([a-z])([A-Z])/g,"$1 $2").replace(/\s+/g," ").trim();
+const enSt=t=>t.replace(/梅田/,"Umeda").replace(/心斎橋/,"Shinsaibashi").replace(/名古屋本館/,"Nagoya Main Building").replace(/名古屋/,"Nagoya").replace(/名駅/,"Meieki").replace(/大阪/,"Osaka").replace(/全店舗/,"All stores").replace(/東京/,"Tokyo").replace(/福岡/,"Fukuoka").replace(/販売/,"").replace(/春日/,"Kasuga").replace(/古賀/,"Koga").replace(/姪浜/,"Meinohama").replace(/久留米/,"Kurume").replace(/熊本/,"Kumamoto").replace(/博多/,"Hakata").replace(/銀座本店/,"Ginza Main Store").replace(/本店/g," Main Store").replace(/新宿/,"Shinjuku").replace(/店/g," store").replace(/([a-z])([A-Z])/g,"$1 $2").replace(/\s+/g," ").trim();
 function mine(html,tag){
   const out=[],seen=new Set();
   const take=o=>{
@@ -276,10 +278,11 @@ function why(i,o){
   const m=mov(n);if((o.mv==="auto"&&m==="quartz")||(o.mv==="quartz"&&m==="auto"))return"other movement";
   if(o.nw&&!i.n)return"not new";return"";
 }
+const SC=[[/rasin\.co\.jp/,/取扱店舗\s*(\S+)/],[/watchnian\.com/,/(?:ウォッチニアン|WATCHNIAN)\s*(\S*店)\s*TEL/i]];
 async function rasinCheck(){
-  const o=opts(),list=S.items.filter(i=>/rasin\.co\.jp/.test(i.h)&&!i.st&&!why(i,o)).slice(0,30);
-  if(!list.length)return;$("st").textContent="Checking which GINZA RASIN store holds "+list.length+" watches…";
-  await Promise.all(list.map(async i=>{try{const m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").match(/取扱店舗\s*(\S+)/);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}}));
+  const o=opts(),list=S.items.filter(i=>!i.st&&SC.some(c=>c[0].test(i.h))&&!why(i,o)).slice(0,40);
+  if(!list.length)return;$("st").textContent="Checking which store holds "+list.length+" watches…";
+  await Promise.all(list.map(async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}}));
 }
 function render(note=""){
   const o=opts(),s=$("sort").value,by={},v=[],d=[];

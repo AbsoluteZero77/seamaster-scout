@@ -65,12 +65,12 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><main>
 <header class="hero"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset=".5" stop-color="#7f8d99"/><stop offset="1" stop-color="#eef2f6"/></linearGradient><radialGradient id="g2"><stop offset="0" stop-color="#47a3e6"/><stop offset="1" stop-color="#0b3d63"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#g1)"/><circle cx="32" cy="32" r="25" fill="#0c1115"/><circle cx="32" cy="32" r="21" fill="url(#g2)"/><path d="M32 32L22 25M32 32L44 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="12.5" r="2.2" fill="#f2b705"/><circle cx="32" cy="32" r="2.4" fill="#f2b705"/><path d="M15 21a21 21 0 0 1 24-9" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-<div><h1>Seamaster Scout</h1><div class="sub">Seamaster Diver 300M · Black Bay Pro · Superocean Heritage</div></div></header>
+<div><h1>Seamaster Scout</h1><div class="sub">Diver 300M · SMPc 41mm · Black Bay Pro · Superocean Heritage</div></div></header>
 <div id="menu" class="menu" hidden></div>
 <section id="app" hidden>
   <div class="bar"><div><b id="mn"></b><div class="sub" id="when"></div></div>
     <div><button class="btn ghost" id="back">Change search</button> <button class="btn" id="u">Update</button></div></div>
-  <div class="chips" id="wk"><button data-w="all">All watches</button><button data-w="omega">Omega Seamaster Diver 300M</button><button data-w="tudor">Tudor Black Bay Pro</button><button data-w="breitling">Breitling Superocean Heritage</button></div>
+  <div class="chips" id="wk"><button data-w="all">All watches</button><button data-w="omega">Omega Seamaster Diver 300M</button><button data-w="smpc">Omega SMPc 41mm</button><button data-w="tudor">Tudor Black Bay Pro</button><button data-w="breitling">Breitling Superocean Heritage</button></div>
   <div class="filters">
     <label>Max price ¥ <input id="max" type="number" step="50000" min="0" style="width:110px"></label>
     <label>Sort <select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></label>
@@ -94,9 +94,10 @@ const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=
 const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.omega.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
 const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
-const tk=ws=>ws.map(k=>({url:TK[k],tag:"Takayama",enc:"shift_jis",fl:true}));
+const tk=ws=>ws.map(k=>({url:TK[k==="smpc"?"omega":k],tag:"Takayama",enc:"shift_jis",fl:true}));
 const WN={omega:"https://watchnian.com/shop/c/com-seama/?filtercode13=1&pagesize=100",tudor:"https://watchnian.com/shop/c/ctd-bb_ssp/?filtercode13=1&pagesize=100",breitling:"https://watchnian.com/shop/c/cbr-supoc/?filtercode13=1&pagesize=100"};
 function shopJobs(ws){
+  ws=[...new Set(ws.map(k=>k==="smpc"?"omega":k))];
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
   const add=k=>{const W=WATCHES[k];for(const p of["","&page=2","&page=3"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
   for(const k of ws)out.push({url:WN[k],tag:"WATCHNIAN",fl:true});
@@ -108,7 +109,7 @@ function shopJobs(ws){
 const custom=()=>L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}));
 const MODES={
  area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:ws=>[...shopJobs(ws),...custom()]},
- japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.map(k=>({url:ya(0,WATCHES[k].q),alt:yp(0,WATCHES[k].q),tag:"Yahoo Auctions"})),...shopJobs(ws),...tk(ws),...(ws.includes("omega")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
+ japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.map(k=>({url:ya(0,WATCHES[k].q),alt:yp(0,WATCHES[k].q),tag:"Yahoo Auctions"})),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores, all three watches",jobs:ws=>tk(ws)}
 };
 
@@ -229,12 +230,13 @@ $("cuc").onclick=()=>{L.set("custom",[]);update()};
 const mov=n=>/クォーツ|クオーツ|quartz/i.test(n)?"quartz":/自動巻|オートマ|automatic|コーアクシャル|co-axial|マスタークロノメーター|\b(?:210|212|215|233|234)\.\d\d\./i.test(n)?"auto":"";
 const ref=n=>{const m=n.match(/\b(2[01]\d)\.?(\d{2})\.?(\d{2})\.?(\d{2})\.?0?(\d{2})\.?(\d{3})\b/);return m?m.slice(1):null};
 function colourOf(n,f){
+  if(/\b2220\.80/.test(n))return"black";if(/\b2222\.80/.test(n))return"blue";
   if(f&&(f[0]==="210"||f[0]==="212"))return f[4]==="01"?"black":f[4]==="03"?"blue":"other";
   const k=/ブラック|黒|black/i.test(n),l=/ブルー|青|blue|ネイビー|navy/i.test(n);
   if(!k&&!l)return /ホワイト|白|white|グリーン|緑|green|グレー|灰|gr[ae]y|オレンジ|orange|イエロー|黄|ピンク|pink|シルバー|silver|ブラウン|茶|brown|レッド|赤|red/i.test(n)?"other":"";
   return(k?"black":"")+(l?"blue":"");
 }
-const hasComp=(n,f,k)=>/クロノグラフ|chronograph|chrono(?!meter)|GMT|クロノ(?!メーター)|ジーエムティー|ワールドタイマー/i.test(n)||(k==="omega"&&f&&f[3]!=="20")||(k==="breitling"&&/A13\d{3}|A23\d{3}|AB01\d{2}/i.test(n));
+const hasComp=(n,f,k)=>/クロノグラフ|chronograph|chrono(?!meter)|GMT|クロノ(?!メーター)|ジーエムティー|ワールドタイマー/i.test(n)||((k==="omega"||k==="smpc")&&f&&f[3]!=="20")||(k==="breitling"&&/A13\d{3}|A23\d{3}|AB01\d{2}/i.test(n));
 function omegaSpec(n){
   const f=ref(n);
   if(/クォーツ|クオーツ|quartz/i.test(n))return"not Co-Axial";
@@ -243,14 +245,25 @@ function omegaSpec(n){
   if(/アクアテラ|aqua ?terra|プラネット|planet|ploprof|プロプロフ|スピードマスター|speedmaster/i.test(n)&&!/ダイバー|diver/i.test(n))return"other model";
   return"";
 }
+function smpcSpec(n){
+  const r=omegaSpec(n);if(r)return r;
+  const f=ref(n);
+  if(f){if(f[0]!=="212")return"not an SMPc (2018+ model)";if(f[2]!=="41")return"not 41mm"}
+  else if(!/\b222[02]\.80/.test(n)){
+    if(/マスタークロノメーター|master chronometer/i.test(n))return"not an SMPc (2018+ model)";
+    if(/\b(?:34|36|38|39|40|42|43|44|45|46)(?:\.5)?\s*(?:mm|ミリ)/i.test(n))return"not 41mm";
+  }
+  return"";
+}
 const WATCHES={
  omega:{name:"Omega Seamaster Diver 300M",q:"オメガ シーマスター ダイバー300M コーアクシャル",qs:"シーマスターダイバー300M",qo:"シーマスター ダイバー300M コーアクシャル",en:"Omega Seamaster Diver 300M Co-Axial",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:omegaSpec},
+ smpc:{name:"Omega SMPc 41mm",q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル 41mm",qs:"シーマスターダイバー300M",qo:"シーマスター プロフェッショナル 300 コーアクシャル",en:"Omega Seamaster Professional 300M Co-Axial 41mm",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:smpcSpec},
  tudor:{name:"Tudor Black Bay Pro",q:"チューダー ブラックベイ プロ",qs:"ブラックベイプロ",qo:"ブラックベイ プロ",en:"Tudor Black Bay Pro",is:/チューダー|チュードル|tudor|ブラックベイ|black ?bay/i,is2:/ブラックベイ|black ?bay|79\d{3}/i,spec:n=>/プロ|\bpro\b|79470/i.test(n)?"":"not the Black Bay Pro"},
  breitling:{name:"Breitling Superocean Heritage",q:"ブライトリング スーパーオーシャン ヘリテージ",qs:"スーパーオーシャンヘリテージ",qo:"スーパーオーシャン ヘリテージ",en:"Breitling Superocean Heritage",is:/ブライトリング|breitling|スーパーオーシャン|superocean|super ocean/i,is2:/スーパーオーシャン|superocean|super ocean|A1732[01]|AB20[1-4]\d/i,spec:n=>/ヘリテージ|heritage|A1732[01]|A1332[0-9]|A2332[0-9]|A1037[0-9]|AB20[1-4]\d|AB01[56]\d/i.test(n)?"":"not Heritage"}};
-const DEF={omega:["bb","date"],tudor:["",""],breitling:["",""],all:["",""]};
+const DEF={omega:["bb","date"],smpc:["bb","date"],tudor:["",""],breitling:["",""],all:["",""]};
 function applyDef(){const d=DEF[S.w]||["",""];$("col").value=d[0];$("cmp").value=d[1]}
 function wk(n){for(const k in WATCHES){const W=WATCHES[k];if(W.is.test(n)&&W.is2.test(n))return k}return""}
-const wkeys=()=>S.w==="all"?Object.keys(WATCHES):[S.w];
+const wkeys=()=>S.w==="all"?["omega","tudor","breitling"]:[S.w];
 function sq(){return S.w==="all"?"(オメガ シーマスター ダイバー300M) OR (チューダー ブラックベイ プロ) OR (ブライトリング スーパーオーシャン ヘリテージ)":WATCHES[S.w].q}
 function syncW(){
   document.querySelectorAll("#wk button").forEach(b=>b.classList.toggle("on",b.dataset.w===S.w));
@@ -264,7 +277,7 @@ function setW(w){S.w=w;L.set("w",w);applyDef();syncW();const c=L.get("c_"+S.mode
 $("wk").onclick=e=>{const b=e.target.closest("button");if(b)setW(b.dataset.w)};
 const opts=()=>({max:+$("max").value||0,min:+$("min").value||0,j:$("junk").checked,nw:$("onlynew").checked,sp:$("spec").checked,mv:$("mv").value,stock:$("stock").value,col:$("col").value,cmp:$("cmp").value,all:$("showall").checked});
 function why(i,o){
-  const n=N(i.t),k=wk(n),f=ref(n);
+  const n=N(i.t),f=ref(n);let k=wk(n);if(S.w==="smpc"&&k==="omega")k="smpc";
   if(!k)return"not one of your watches";
   if(S.w!=="all"&&k!==S.w)return"other watch";
   if(o.sp){const r=WATCHES[k].spec(n);if(r)return r}

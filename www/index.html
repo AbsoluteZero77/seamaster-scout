@@ -93,23 +93,26 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=id=>document.getElementById(id);
 const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.omega.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
+const SMREFS=["212.30.41.20.01.001","212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001","212.30.41.20.03.002"];
 const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
 const tk=ws=>ws.map(k=>({url:TK[k==="smpc"?"omega":k],tag:"Takayama",enc:"shift_jis",fl:true}));
 const WN={omega:"https://watchnian.com/shop/c/com-seama/?filtercode13=1&pagesize=100",tudor:"https://watchnian.com/shop/c/ctd-bb_ssp/?filtercode13=1&pagesize=100",breitling:"https://watchnian.com/shop/c/cbr-supoc/?filtercode13=1&pagesize=100"};
 function shopJobs(ws){
-  ws=[...new Set(ws.map(k=>k==="smpc"?"omega":k))];
+  const sm=ws.includes("smpc");ws=[...new Set(ws.map(k=>k==="smpc"?"omega":k))];
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
   const add=k=>{const W=WATCHES[k];for(const p of["","&page=2","&page=3"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
   for(const k of ws)out.push({url:WN[k],tag:"WATCHNIAN",fl:true});
-  if(ws.includes("omega")){out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});for(const n of[1,2,3])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});add("omega")}
+  if(ws.includes("omega")){out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});for(const n of[1,2,3,4])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});add("omega")}
   if(ws.includes("tudor")){out.push({url:"https://www.rasin.co.jp/SHOP/85111/156586/list.html",tag:"GINZA RASIN",fl:true});add("tudor")}
   if(ws.includes("breitling"))add("breitling");
+  if(sm){for(const r of SMREFS)out.push({url:kq(r),tag:"KOMEHYO",gen:true},{url:ok(r),tag:"OKURA ONLINE"},{url:"https://watchnian.com/shop/goods/search.aspx?search=search%2Cx&keyword="+encodeURIComponent(r),tag:"WATCHNIAN",fl:true});
+    for(const n of[2,3,4])out.push({url:"https://watchnian.com/shop/c/com-seama_p"+n+"/?filtercode13=1&pagesize=100",tag:"WATCHNIAN",fl:true})}
   return out;
 }
 const custom=()=>L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}));
 const MODES={
  area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:ws=>[...shopJobs(ws),...custom()]},
- japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.map(k=>({url:ya(0,WATCHES[k].q),alt:yp(0,WATCHES[k].q),tag:"Yahoo Auctions"})),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
+ japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.flatMap(k=>(k==="smpc"?[WATCHES.smpc.q,...SMREFS.map(r=>"オメガ シーマスター "+r)]:[WATCHES[k].q]).map(q=>({url:ya(0,q),alt:yp(0,q),tag:"Yahoo Auctions"}))),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores, all three watches",jobs:ws=>tk(ws)}
 };
 
@@ -246,18 +249,14 @@ function omegaSpec(n){
   return"";
 }
 function smpcSpec(n){
-  const r=omegaSpec(n);if(r)return r;
   const f=ref(n);
-  if(f){if(f[0]!=="212")return"not an SMPc (2018+ model)";if(f[2]!=="41")return"not 41mm"}
-  else if(!/\b222[02]\.80/.test(n)){
-    if(/マスタークロノメーター|master chronometer/i.test(n))return"not an SMPc (2018+ model)";
-    if(/\b(?:34|36|38|39|40|42|43|44|45|46)(?:\.5)?\s*(?:mm|ミリ)/i.test(n))return"not 41mm";
-  }
+  if(!f||f[0]!=="212"||f[1]!=="30"||f[2]!=="41"||f[3]!=="20")return"not a 212.30.41.20 SMPc";
+  if(f[4]!=="01"&&f[4]!=="03")return"other dial colour";
   return"";
 }
 const WATCHES={
  omega:{name:"Omega Seamaster Diver 300M",q:"オメガ シーマスター ダイバー300M コーアクシャル",qs:"シーマスターダイバー300M",qo:"シーマスター ダイバー300M コーアクシャル",en:"Omega Seamaster Diver 300M Co-Axial",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:omegaSpec},
- smpc:{name:"Omega SMPc 41mm",q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル 41mm",qs:"シーマスターダイバー300M",qo:"シーマスター プロフェッショナル 300 コーアクシャル",en:"Omega Seamaster Professional 300M Co-Axial 41mm",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:smpcSpec},
+ smpc:{name:"Omega SMPc 41mm (212.30.41.20)",q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル 41mm",qs:"シーマスターダイバー300M",qo:"シーマスター プロフェッショナル 300 コーアクシャル",en:"Omega Seamaster Professional 300M Co-Axial 41mm",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:smpcSpec},
  tudor:{name:"Tudor Black Bay Pro",q:"チューダー ブラックベイ プロ",qs:"ブラックベイプロ",qo:"ブラックベイ プロ",en:"Tudor Black Bay Pro",is:/チューダー|チュードル|tudor|ブラックベイ|black ?bay/i,is2:/ブラックベイ|black ?bay|79\d{3}/i,spec:n=>/プロ|\bpro\b|79470/i.test(n)?"":"not the Black Bay Pro"},
  breitling:{name:"Breitling Superocean Heritage",q:"ブライトリング スーパーオーシャン ヘリテージ",qs:"スーパーオーシャンヘリテージ",qo:"スーパーオーシャン ヘリテージ",en:"Breitling Superocean Heritage",is:/ブライトリング|breitling|スーパーオーシャン|superocean|super ocean/i,is2:/スーパーオーシャン|superocean|super ocean|A1732[01]|AB20[1-4]\d/i,spec:n=>/ヘリテージ|heritage|A1732[01]|A1332[0-9]|A2332[0-9]|A1037[0-9]|AB20[1-4]\d|AB01[56]\d/i.test(n)?"":"not Heritage"}};
 const DEF={omega:["bb","date"],smpc:["bb","date"],tudor:["",""],breitling:["",""],all:["",""]};

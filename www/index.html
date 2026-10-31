@@ -331,9 +331,13 @@ const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>4
 $("mu").onclick=()=>Mu.toggle();
 if(L.get("music",false)){const r=e=>{if(e.target.closest("#mu"))return;removeEventListener("pointerdown",r);if(!Mu.on)Mu.toggle()};addEventListener("pointerdown",r)}
 async function widgetRun(){
-  try{S.mode="japan";S.w="smpc";applyDef();await update();
-    const o=opts(),v=S.items.filter(i=>!why(i,o)).sort((a,b)=>a.p-b.p);
-    Android.report(JSON.stringify(v.length?{ok:1,p:v[0].p,t:en(v[0].t),u:v[0].h,img:v[0].img||"",s:v[0].tag,n:v.length}:{ok:0,scanned:S.items.length}));
+  try{S.mode="japan";S.w="smpc";applyDef();$("max").value="";$("min").value="";await update();
+    const o=opts(),rc={},v=[];
+    S.items.forEach(i=>{const r=why(i,o);if(r)rc[r]=(rc[r]||0)+1;else v.push(i)});
+    v.sort((a,b)=>a.p-b.p);
+    const rows=[...$("dgl").children],bad=rows.filter(r=>/error:/.test(r.textContent)).length;
+    const base={scanned:S.items.length,sites:rows.length,failed:bad,why:Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,c])=>c+" "+k).join(", "),err:$("st").textContent.indexOf("Update failed")===0?$("st").textContent:""};
+    Android.report(JSON.stringify(v.length?{ok:1,p:v[0].p,t:en(v[0].t),u:v[0].h,img:v[0].img||"",s:v[0].tag,n:v.length,...base}:{ok:0,...base}));
   }catch(e){Android.report(JSON.stringify({ok:0,err:String(e&&e.message||e)}))}
 }
 if(/[?&]widget=1/.test(location.search)&&window.Android)widgetRun();

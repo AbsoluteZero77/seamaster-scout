@@ -132,11 +132,12 @@ function open(k){
   const c=L.get("c_"+k+"_"+S.w,null);S.items=c?c.items:[];S.when=c?c.when:0;render();
   if(!c||Date.now()-c.when>36e5)update();
 }
+const dec=(bt,enc)=>{const cs=enc||((new TextDecoder("latin1").decode(bt.slice(0,3000)).match(/charset=["']?([\w-]+)/i)||[])[1])||"utf-8";try{return new TextDecoder(cs).decode(bt)}catch(e){return new TextDecoder().decode(bt)}};
 async function get(url,enc){
   const cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.CapacitorHttp;
   for(let i=0;i<2;i++){try{
-    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja","User-Agent":"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"}});if(r.status>=400)throw Error("HTTP "+r.status);
-      const bt=Uint8Array.from(atob(r.data),c=>c.charCodeAt(0));let cs=enc||((new TextDecoder("latin1").decode(bt.slice(0,3000)).match(/charset=["']?([\w-]+)/i)||[])[1])||"utf-8";let tx;try{tx=new TextDecoder(cs).decode(bt)}catch(e){tx=new TextDecoder().decode(bt)}return tx}
+    if(window.NativeHttp){const b=NativeHttp.get(url);if(!b)throw Error("no response");return dec(Uint8Array.from(atob(b),c=>c.charCodeAt(0)),enc)}
+    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja","User-Agent":"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"}});if(r.status>=400)throw Error("HTTP "+r.status);return dec(Uint8Array.from(atob(r.data),c=>c.charCodeAt(0)),enc)}
     const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
   }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
 }
@@ -292,6 +293,7 @@ function why(i,o){
 }
 const SC=[[/rasin\.co\.jp/,/取扱店舗\s*(\S+)/],[/watchnian\.com/,/(?:ウォッチニアン|WATCHNIAN)\s*(\S*店)\s*TEL/i]];
 async function rasinCheck(){
+  if(S.mode!=="area")return;
   const o=opts(),list=S.items.filter(i=>!i.st&&SC.some(c=>c[0].test(i.h))&&!why(i,o)).slice(0,40);
   if(!list.length)return;$("st").textContent="Checking which store holds "+list.length+" watches…";
   await Promise.all(list.map(async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}}));
@@ -328,5 +330,12 @@ const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>4
   $("mu").textContent="♪ Music: "+(on?"on":"off");$("mu").setAttribute("aria-pressed",on);L.set("music",on)}}})();
 $("mu").onclick=()=>Mu.toggle();
 if(L.get("music",false)){const r=e=>{if(e.target.closest("#mu"))return;removeEventListener("pointerdown",r);if(!Mu.on)Mu.toggle()};addEventListener("pointerdown",r)}
-const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false;
+async function widgetRun(){
+  try{S.mode="japan";S.w="smpc";applyDef();await update();
+    const o=opts(),v=S.items.filter(i=>!why(i,o)).sort((a,b)=>a.p-b.p);
+    Android.report(JSON.stringify(v.length?{ok:1,p:v[0].p,t:en(v[0].t),u:v[0].h,img:v[0].img||"",s:v[0].tag,n:v.length}:{ok:0,scanned:S.items.length}));
+  }catch(e){Android.report(JSON.stringify({ok:0,err:String(e&&e.message||e)}))}
+}
+if(/[?&]widget=1/.test(location.search)&&window.Android)widgetRun();
+else{const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false}
 </script></main></body></html>

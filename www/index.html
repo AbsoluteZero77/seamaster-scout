@@ -6,7 +6,7 @@
 <style>
 :root{--bg1:#eef0f3;--bg2:#dde2e8;--ink:#14232d;--mute:#5a6b77;--card:#fff;--line:#d0d7de;--navy:#0c3a5c;--navy2:#0f86a8;--gold:#f2b01e;--new:#d3122f}
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2)) fixed;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(0px,env(safe-area-inset-top)) 16px 56px}
+body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(0px,env(safe-area-inset-top)) 16px 56px}
 main{max-width:1000px;margin:0 auto}
 .hero{position:relative;margin:14px 0 18px;padding:20px;display:flex;gap:14px;align-items:center;color:#fff;background:linear-gradient(120deg,#06283f,#0d5a80 52%,#0f8aa8);border-radius:20px;box-shadow:0 10px 26px rgba(7,45,74,.3);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.26),rgba(255,255,255,0) 45%);pointer-events:none}
@@ -29,12 +29,12 @@ button,select,input{font:inherit}
 .ic svg{width:28px;height:28px}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:6px 0 14px}
 .bar b{font:700 21px Georgia,serif}
-.filters{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
+.filters{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
 .filters input[type=number],select{border:1px solid #b9c4cd;border-radius:8px;padding:7px 8px;background:#fff;color:var(--ink)}
 .filters input[type=checkbox]{accent-color:var(--navy);width:16px;height:16px}
 #st{color:var(--mute);font-size:14px;margin:14px 2px}
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.c{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(20,35,45,.08);transition:transform .2s,box-shadow .2s}
+.c{content-visibility:auto;contain-intrinsic-size:auto 330px;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(20,35,45,.08);transition:transform .2s,box-shadow .2s}
 .c:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(11,61,99,.2)}
 .c::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);pointer-events:none;transition:left .7s}
 .c:hover::after{left:130%}
@@ -47,12 +47,12 @@ button,select,input{font:inherit}
 .p{display:inline-block;margin-top:9px;padding:3px 12px;border-radius:99px;font:800 16px system-ui;color:#fff;background:linear-gradient(180deg,#2273ad,#0b3d63);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 .tag{font-size:12px;color:var(--mute);margin-top:6px}
 .c .x{padding:0 14px 12px;font-size:12px}.x a{color:var(--navy2);font-weight:600}
-.nw{position:absolute;z-index:2;top:10px;left:10px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.6px;padding:3px 10px;border-radius:99px;background:linear-gradient(180deg,#f0344f,var(--new));box-shadow:0 2px 8px rgba(211,18,47,.5),inset 0 1px 0 rgba(255,255,255,.5);animation:pl 2s infinite}
+.nw{position:absolute;z-index:2;top:10px;left:10px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.6px;padding:3px 10px;border-radius:99px;background:linear-gradient(180deg,#f0344f,var(--new));box-shadow:0 2px 8px rgba(211,18,47,.5),inset 0 1px 0 rgba(255,255,255,.5)}
 @keyframes pl{50%{box-shadow:0 2px 14px rgba(211,18,47,.85),inset 0 1px 0 rgba(255,255,255,.5)}}
 .sk{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(100deg,#dfe4e8 30%,#f4f6f8 50%,#dfe4e8 70%);background-size:200% 100%;animation:s 1.3s infinite}
 @keyframes s{to{background-position:-200% 0}}
 .links{margin-top:30px;font-size:14px;color:var(--mute)}.links a{color:var(--navy2);font-weight:600;margin-right:14px}
-.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:5;border-radius:99px;backdrop-filter:blur(8px)}
+.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:5;border-radius:99px;}
 details{margin-top:22px;background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:14px;padding:4px 14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
 summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 .sr{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
@@ -60,7 +60,8 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 .add{display:flex;gap:8px;padding:12px 0 14px;border-top:1px solid var(--line)}.add input{flex:1;min-width:0;border:1px solid #b9c4cd;border-radius:8px;padding:8px}
 #sum{font-size:12.5px;color:var(--mute);background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 14px}#sum:empty{display:none}#sum div{padding:3px 0}#sum b{color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}.chips button{border:1px solid #b9c4cd;background:linear-gradient(180deg,#fff,#e9edf1);color:var(--navy);border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 #fff}.chips button.on{color:#fff;border-color:var(--navy);background:linear-gradient(180deg,#2273ad,var(--navy) 55%,#082f4d);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(11,61,99,.3)}
-.ph{position:relative}.pr{position:absolute;right:8px;bottom:8px;color:#fff;font:800 15px system-ui;padding:4px 11px;border-radius:99px;background:linear-gradient(180deg,rgba(20,120,168,.95),rgba(8,47,77,.95));box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}.sc{position:absolute;right:8px;top:8px;font:700 11px system-ui;color:var(--navy);padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.2)}.c.dim{opacity:.6;filter:grayscale(.7)}.wy{position:absolute;z-index:2;left:0;right:0;bottom:0;background:rgba(20,35,45,.82);color:#fff;font:600 12px system-ui;padding:5px 10px;text-align:center}.tag{min-height:1em}
+.ph{position:relative}.pr{position:absolute;right:8px;bottom:8px;color:#fff;font:800 15px system-ui;padding:4px 11px;border-radius:99px;background:linear-gradient(180deg,rgba(20,120,168,.95),rgba(8,47,77,.95));box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}.sc{position:absolute;right:8px;top:8px;font:700 11px system-ui;color:var(--navy);padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.2)}.c.dim{opacity:.6;filter:grayscale(.7)}.wy{position:absolute;z-index:2;left:0;right:0;bottom:0;background:rgba(20,35,45,.82);color:#fff;font:600 12px system-ui;padding:5px 10px;text-align:center}.tag{min-height:1em}
+@media (hover:none){.c::after,.opt::after{display:none}.c:hover,.opt:hover{transform:none}}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><main>
@@ -93,6 +94,7 @@ summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
 const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=id=>document.getElementById(id);
 const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.omega.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
 const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
+const SMQ=["212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001"];
 const SMREFS=["212.30.41.20.01.001","212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001","212.30.41.20.03.002"];
 const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
 const tk=ws=>ws.map(k=>({url:TK[k==="smpc"?"omega":k],tag:"Takayama",enc:"shift_jis",fl:true}));
@@ -100,19 +102,19 @@ const WN={omega:"https://watchnian.com/shop/c/com-seama/?filtercode13=1&pagesize
 function shopJobs(ws){
   const sm=ws.includes("smpc");ws=[...new Set(ws.map(k=>k==="smpc"?"omega":k))];
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
-  const add=k=>{const W=WATCHES[k];for(const p of["","&page=2","&page=3"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
+  const add=k=>{const W=WATCHES[k];for(const p of["","&page=2"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
   for(const k of ws)out.push({url:WN[k],tag:"WATCHNIAN",fl:true});
   if(ws.includes("omega")){out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});for(const n of[1,2,3,4])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});add("omega")}
   if(ws.includes("tudor")){out.push({url:"https://www.rasin.co.jp/SHOP/85111/156586/list.html",tag:"GINZA RASIN",fl:true});add("tudor")}
   if(ws.includes("breitling"))add("breitling");
-  if(sm){for(const r of SMREFS)out.push({url:kq(r),tag:"KOMEHYO",gen:true},{url:ok(r),tag:"OKURA ONLINE"},{url:"https://watchnian.com/shop/goods/search.aspx?search=search%2Cx&keyword="+encodeURIComponent(r),tag:"WATCHNIAN",fl:true});
-    for(const n of[2,3,4])out.push({url:"https://watchnian.com/shop/c/com-seama_p"+n+"/?filtercode13=1&pagesize=100",tag:"WATCHNIAN",fl:true})}
+  if(sm){for(const r of SMQ)out.push({url:kq(r),tag:"KOMEHYO",gen:true},{url:ok(r),tag:"OKURA ONLINE"},{url:"https://watchnian.com/shop/goods/search.aspx?search=search%2Cx&keyword="+encodeURIComponent(r),tag:"WATCHNIAN",fl:true});
+    for(const n of[2,3])out.push({url:"https://watchnian.com/shop/c/com-seama_p"+n+"/?filtercode13=1&pagesize=100",tag:"WATCHNIAN",fl:true})}
   return out;
 }
 const custom=()=>L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}));
 const MODES={
  area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:ws=>[...shopJobs(ws),...custom()]},
- japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.flatMap(k=>(k==="smpc"?[WATCHES.smpc.q,...SMREFS.map(r=>"オメガ シーマスター "+r)]:[WATCHES[k].q]).map(q=>({url:ya(0,q),alt:yp(0,q),tag:"Yahoo Auctions"}))),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
+ japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.flatMap(k=>(k==="smpc"?[WATCHES.smpc.q,...SMQ.map(r=>"オメガ シーマスター "+r)]:[WATCHES[k].q]).map(q=>({url:ya(0,q),alt:yp(0,q),tag:"Yahoo Auctions"}))),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
  takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores, all three watches",jobs:ws=>tk(ws)}
 };
 
@@ -133,13 +135,15 @@ function open(k){
   if(!c||Date.now()-c.when>36e5)update();
 }
 const dec=(bt,enc)=>{const cs=enc||((new TextDecoder("latin1").decode(bt.slice(0,3000)).match(/charset=["']?([\w-]+)/i)||[])[1])||"utf-8";try{return new TextDecoder(cs).decode(bt)}catch(e){return new TextDecoder().decode(bt)}};
+let __nid=0;const __ncb={};window.__nh=(id,b)=>{const f=__ncb[id];if(f){delete __ncb[id];f(b)}};
+const tmo=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(Error("timed out")),ms))]);
 async function get(url,enc){
   const cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.CapacitorHttp;
   for(let i=0;i<2;i++){try{
-    if(window.NativeHttp){const b=NativeHttp.get(url);if(!b)throw Error("no response");return dec(Uint8Array.from(atob(b),c=>c.charCodeAt(0)),enc)}
-    if(cap){const r=await cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja","User-Agent":"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"}});if(r.status>=400)throw Error("HTTP "+r.status);return dec(Uint8Array.from(atob(r.data),c=>c.charCodeAt(0)),enc)}
-    const r=await fetch("/proxy?url="+encodeURIComponent(url));if(!r.ok)throw Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);return r.text();
-  }catch(e){if(i)throw e;await new Promise(r=>setTimeout(r,700))}}
+    if(window.NativeHttp&&NativeHttp.fetch){const b=await new Promise(res=>{const id=++__nid;__ncb[id]=res;NativeHttp.fetch(url,id);setTimeout(()=>{if(__ncb[id]){delete __ncb[id];res("")}},20000)});if(!b)throw Error("no response");return dec(Uint8Array.from(atob(b),c=>c.charCodeAt(0)),enc)}
+    if(cap){const r=await tmo(cap.get({url,responseType:"arraybuffer",headers:{"Accept-Language":"ja","User-Agent":"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"}}),15000);if(r.status>=400){const e=Error("HTTP "+r.status);e.hard=1;throw e}return dec(Uint8Array.from(atob(r.data),c=>c.charCodeAt(0)),enc)}
+    const r=await tmo(fetch("/proxy?url="+encodeURIComponent(url)),15000);if(!r.ok){const e=Error(r.status==404?"No local server. Run server.py and open localhost:8000":"HTTP "+r.status);e.hard=1;throw e}return r.text();
+  }catch(e){if(i||e.hard)throw e;await new Promise(r=>setTimeout(r,400))}}
 }
 const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/(?:U|z|used)-|\/items\/\d+|\/products\/[\w-]+|komehyo\.jp\/product\//;
 function pic(b,base){
@@ -201,9 +205,16 @@ function diag(h){const t=(h.match(/<title>([^<]{0,40})/)||[])[1]||"no title";ret
 async function update(){
   const jobs=MODES[S.mode].jobs(wkeys()),info=[];
   if(!jobs.length){S.items=[];S.when=Date.now();render("This shop has no stock page set up for the selected watch. ");return}
-  $("u").disabled=true;$("st").textContent="Checking "+jobs.length+" source"+(jobs.length>1?"s":"")+"…";
-  $("grid").innerHTML='<div class="sk"></div>'.repeat(4);
-  const res=await Promise.allSettled(jobs.map(async j=>{let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag,j.gen);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag,j.gen)}info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");it.forEach(x=>{x.st=x.st||j.st||"";x.fl=x.st?!ONLINE.test(x.st):!!j.fl;x.area=x.st?areaOf(x.st):undefined});return it}));
+  $("u").disabled=true;$("grid").innerHTML='<div class="sk"></div>'.repeat(4);
+  const res=new Array(jobs.length);let next=0,done=0,last=0;
+  const merge=()=>{const u=new Map(),lists=res.filter(r=>r&&r.status==="fulfilled").map(r=>r.value);for(let k=0;;k++){let any=false;for(const l of lists)if(l[k]){any=true;u.has(l[k].h)||u.set(l[k].h,l[k])}if(!any)break}return u};
+  const tick=()=>{$("st").textContent="Checked "+done+" of "+jobs.length+" sources…";if(done<jobs.length&&Date.now()-last>1200){last=Date.now();const u=merge();if(u.size){S.items=[...u.values()];render("Checked "+done+"/"+jobs.length+" · ")}}};
+  tick();
+  const run=async()=>{while(next<jobs.length){const k=next++,j=jobs[k];try{
+    let h=await get(j.url,j.enc),u=j.url,it=extract(h,u,j.tag,j.gen);if(!it.length&&j.alt){h=await get(j.alt,j.enc);u=j.alt;it=extract(h,u,j.tag,j.gen)}
+    info.push(j.tag+": "+h.length+" chars, "+it.length+" listings ["+diag(h)+"]");it.forEach(x=>{x.st=x.st||j.st||"";x.fl=x.st?!ONLINE.test(x.st):!!j.fl;x.area=x.st?areaOf(x.st):undefined});res[k]={status:"fulfilled",value:it};
+  }catch(e){res[k]={status:"rejected",reason:e}}done++;tick()}};
+  await Promise.all(Array.from({length:Math.min(8,jobs.length)},run));
   const ok=res.filter(r=>r.status==="fulfilled"),bad=res.filter(r=>r.status==="rejected");
   const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
   $("dg").hidden=false;$("dgl").innerHTML=res.map((r,i)=>'<div class="sr"><div><b>'+esc(jobs[i].tag)+'</b><div class="sub">'+esc(jobs[i].url.replace(/^https?:\/\/(www\.)?/,"").slice(0,58))+'</div></div><div>'+(r.status==="fulfilled"?r.value.length+" found":"error: "+esc(r.reason.message))+'</div></div>').join("");
@@ -296,7 +307,7 @@ async function rasinCheck(){
   if(S.mode!=="area")return;
   const o=opts(),list=S.items.filter(i=>!i.st&&SC.some(c=>c[0].test(i.h))&&!why(i,o)).slice(0,40);
   if(!list.length)return;$("st").textContent="Checking which store holds "+list.length+" watches…";
-  await Promise.all(list.map(async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}}));
+  const one=async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}};for(let k=0;k<list.length;k+=8)await Promise.all(list.slice(k,k+8).map(one));
 }
 function render(note=""){
   const o=opts(),s=$("sort").value,by={},v=[],d=[];
@@ -307,7 +318,7 @@ function render(note=""){
   $("sum").innerHTML=Object.entries(by).map(([t,b])=>"<div><b>"+t+"</b>: "+b.n+" scanned, "+b.ok+" match"+(Object.keys(b.r).length?" · left out: "+Object.entries(b.r).map(([k,c])=>c+" "+k).join(", "):"")+"</div>").join("");
   $("grid").innerHTML="";
   [...v,...d].forEach(([i,r])=>{const c=document.createElement("div");c.className="c"+(r?" dim":"");
-    c.innerHTML='<a class="m" target="_blank" rel="noopener"><div class="ph"><img loading="lazy" referrerpolicy="no-referrer" alt=""><span class="pr"></span><span class="sc"></span></div><div class="i"><div class="t"></div><div class="o"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"")+(r?'<span class="wy"></span>':"");
+    c.innerHTML='<a class="m" target="_blank" rel="noopener"><div class="ph"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt=""><span class="pr"></span><span class="sc"></span></div><div class="i"><div class="t"></div><div class="o"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"")+(r?'<span class="wy"></span>':"");
     c.querySelector(".m").href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}
     {const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
     c.querySelector(".pr").textContent=i.p?"¥"+i.p.toLocaleString():"Ask for price";c.querySelector(".sc").textContent=i.tag;

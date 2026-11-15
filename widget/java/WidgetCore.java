@@ -137,11 +137,11 @@ public class WidgetCore {
         Path rr = new Path();
         rr.addRoundRect(new RectF(0, 0, S, S), 40, 40, Path.Direction.CW);
         cv.clipPath(rr);
-        p.setShader(new LinearGradient(0, 0, S, S, 0xFF06283F, 0xFF0F8AA8, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, S, S, 0xFF071F36, 0xFF1DB0C6, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, S, S, p);
         p.setShader(null);
         Paint t = new Paint(Paint.ANTI_ALIAS_FLAG);
-        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         if (photo != null) {
             float sc = Math.max((float) S / photo.getWidth(), (float) S / photo.getHeight());
             Matrix m = new Matrix();
@@ -157,13 +157,13 @@ public class WidgetCore {
             RectF b = new RectF(S - w - 14, 14, S - 14, 58);
             p.setColor(0xEEFFFFFF);
             cv.drawRoundRect(b, 22, 22, p);
-            t.setColor(0xFF0C3A5C);
+            t.setColor(0xFF0A2A47);
             cv.drawText(sh, b.left + 14, b.top + 31, t);
             t.setTextSize(42);
             t.setColor(Color.WHITE);
             w = t.measureText(price) + 38;
             RectF pr = new RectF(S - w - 14, S - 78, S - 14, S - 18);
-            p.setShader(new LinearGradient(0, pr.top, 0, pr.bottom, 0xFF1479A8, 0xFF082F4D, Shader.TileMode.CLAMP));
+            p.setShader(new LinearGradient(0, pr.top, 0, pr.bottom, 0xFF2A8AC0, 0xFF0B3F64, Shader.TileMode.CLAMP));
             cv.drawRoundRect(pr, 30, 30, p);
             p.setShader(null);
             cv.drawText(price, pr.left + 19, pr.top + 43, t);
@@ -179,7 +179,7 @@ public class WidgetCore {
                 t.setTextSize(32);
                 t.setColor(Color.WHITE);
                 cv.drawText(l1, 24, 150, t);
-                t.setTypeface(Typeface.DEFAULT);
+                t.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
                 t.setTextSize(21);
                 t.setColor(0xFFBFE3F2);
                 cv.drawText(clip(l2, 30), 24, 196, t);

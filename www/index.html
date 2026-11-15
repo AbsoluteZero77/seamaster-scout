@@ -1,125 +1,121 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b3d63">
+<meta name="theme-color" content="#0a2a47">
 <title>Seamaster Scout</title><link rel="icon" href="icon.png"><link rel="apple-touch-icon" href="icon.png">
 <style>
-:root{--bg1:#eef0f3;--bg2:#dde2e8;--ink:#14232d;--mute:#5a6b77;--card:#fff;--line:#d0d7de;--navy:#0c3a5c;--navy2:#0f86a8;--gold:#f2b01e;--new:#d3122f}
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(0px,env(safe-area-inset-top)) 16px 56px}
+:root{--bg:#edf0f3;--ink:#0f2230;--mute:#5a7082;--card:#fff;--line:#d4dce3;--navy:#0a2a47;--ocean:#13608f;--aqua:#1fb2c8;--gold:#f2b01e;--new:#e11d48;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:linear-gradient(180deg,#f4f6f8,var(--bg));color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;padding:max(0px,env(safe-area-inset-top)) 14px 72px}
 main{max-width:1000px;margin:0 auto}
-.hero{position:relative;margin:14px 0 18px;padding:20px;display:flex;gap:14px;align-items:center;color:#fff;background:linear-gradient(120deg,#06283f,#0d5a80 52%,#0f8aa8);border-radius:20px;box-shadow:0 10px 26px rgba(7,45,74,.3);overflow:hidden}
-.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.26),rgba(255,255,255,0) 45%);pointer-events:none}
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.logo{width:58px;height:58px;flex:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
-h1{font:700 26px/1.1 Georgia,"Times New Roman",serif;margin:0;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
-.sub{color:var(--mute);font-size:14px}.hero .sub{color:#cfe3f3;margin-top:4px}
-button,select,input{font:inherit}
-.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(180deg,#2273ad,var(--navy) 55%,#082f4d);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 3px 8px rgba(11,61,99,.35);transition:transform .15s,box-shadow .15s}
-.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}
-.btn.ghost{color:var(--navy);background:linear-gradient(180deg,#fff,#e9edf1);border:1px solid #b9c4cd;box-shadow:inset 0 1px 0 #fff,0 2px 5px rgba(0,0,0,.08)}
-.btn:disabled{opacity:.55;cursor:wait}
-:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.menu{display:grid;gap:14px}
-.opt{display:flex;gap:16px;align-items:center;text-align:left;width:100%;padding:18px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f3f5f7);box-shadow:0 2px 8px rgba(20,35,45,.08),inset 0 1px 0 #fff;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;color:inherit}
-.opt::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.8),transparent);transform:skewX(-20deg);transition:left .6s;pointer-events:none}
-.opt:hover{transform:translateY(-2px);border-color:var(--navy2);box-shadow:0 10px 22px rgba(11,61,99,.18)}.opt:hover::after{left:120%}
-.opt b{display:block;font-size:18px}.opt .d{color:var(--mute);font-size:14px}
-.ic{flex:none;width:54px;height:54px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#3a96d4,#0b3d63);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 10px rgba(11,61,99,.3)}
-.ic svg{width:28px;height:28px}
-.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:6px 0 14px}
-.bar b{font:700 21px Georgia,serif}
-.filters{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
-.filters input[type=number],select{border:1px solid #b9c4cd;border-radius:8px;padding:7px 8px;background:#fff;color:var(--ink)}
-.filters input[type=checkbox]{accent-color:var(--navy);width:16px;height:16px}
-#st{color:var(--mute);font-size:14px;margin:14px 2px}
-#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.c{content-visibility:auto;contain-intrinsic-size:auto 330px;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(20,35,45,.08);transition:transform .2s,box-shadow .2s}
-.c:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(11,61,99,.2)}
-.c::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);pointer-events:none;transition:left .7s}
-.c:hover::after{left:130%}
+.hero{position:relative;margin:12px 0 14px;padding:18px;display:flex;gap:14px;align-items:center;color:#fff;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 92% -20%,rgba(255,255,255,.3),transparent 45%),linear-gradient(120deg,#071f36,#0f4f78 55%,#1db0c6);box-shadow:0 12px 28px rgba(7,31,54,.28)}
+.hero::after{content:"";position:absolute;right:-44px;bottom:-64px;width:190px;height:190px;border-radius:50%;border:14px solid rgba(255,255,255,.07)}
+.logo{width:56px;height:56px;flex:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+h1{font:800 24px/1.1 system-ui,sans-serif;letter-spacing:-.01em;margin:0}
+.sub{color:var(--mute);font-size:13px}.hero .sub{color:#cfe9f3;margin-top:4px}
+button,select,input{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:99px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(180deg,#2a8ac0,var(--ocean) 50%,#0b3f64);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 4px 12px rgba(19,96,143,.35);transition:transform .12s}
+.btn:active{transform:scale(.97)}.btn svg{width:18px;height:18px}
+.btn.ghost{color:var(--ocean);background:#fff;border:1px solid #b8c7d3;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.btn:disabled{opacity:.55}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.menu{display:grid;gap:12px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:16px;border-radius:18px;border:1px solid var(--line);background:#fff;box-shadow:0 2px 10px rgba(15,34,48,.07);cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;color:inherit}
+.opt:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(19,96,143,.18)}
+.opt b{display:block;font-size:17px}.opt .d{color:var(--mute);font-size:13px}
+.ic{flex:none;width:52px;height:52px;border-radius:15px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#31a5d4,#0b3f64);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 10px rgba(19,96,143,.3)}
+.ic svg{width:27px;height:27px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:4px 0 12px}
+.bar b{font:800 20px system-ui}.bar>div:last-child{display:flex;gap:8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;min-height:40px;padding:0 16px;border-radius:99px;border:1px solid #b8c7d3;background:#fff;color:var(--ocean);font-weight:700;cursor:pointer}
+.chips button.on{color:#fff;border-color:transparent;background:linear-gradient(180deg,#2a8ac0,var(--ocean) 55%,#0b3f64);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 3px 10px rgba(19,96,143,.3)}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:0 2px 10px rgba(15,34,48,.05)}
+.fl{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.fl input[type=number],.fl select{min-height:42px;border:1px solid #c3d0da;border-radius:12px;padding:0 10px;background:#f8fafb;color:var(--ink);font-size:15px;font-weight:600;text-transform:none;letter-spacing:0}
+.ck{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;min-height:42px}.ck input{width:20px;height:20px;accent-color:var(--ocean)}
+#st{color:var(--mute);font-size:13px;margin:12px 2px}
+#best{display:none;margin:0 0 12px;border-radius:var(--r);background:linear-gradient(120deg,#071f36,#0f4f78 60%,#1db0c6);box-shadow:0 8px 20px rgba(7,31,54,.25)}#best.on{display:block}
+#best a{display:flex;gap:12px;align-items:center;padding:12px 16px;color:#fff;text-decoration:none}#best b{font-size:24px}#best span{font-size:13px;color:#cfe9f3}
+#sum{font-size:12px;color:var(--mute);background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 12px}#sum:empty{display:none}#sum div{padding:2px 0}#sum b{color:var(--ink)}
+details{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:4px 14px;box-shadow:0 2px 10px rgba(15,34,48,.05)}
+summary{cursor:pointer;font-weight:700;padding:11px 0;color:var(--ocean)}
+.sr{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:13px}.sr a{color:var(--ocean);font-weight:700;margin-left:12px;white-space:nowrap}
+.add{display:flex;gap:8px;padding:12px 0 14px;border-top:1px solid var(--line)}.add input{flex:1;min-width:0;border:1px solid #c3d0da;border-radius:12px;padding:0 10px;min-height:42px}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.eh{grid-column:1/-1;margin:8px 2px 0;font-weight:800;font-size:15px;display:flex;align-items:center;gap:10px;color:var(--navy)}.eh::after{content:"";flex:1;height:1px;background:var(--line)}
+.c{content-visibility:auto;contain-intrinsic-size:auto 330px;position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(15,34,48,.07);transition:transform .15s,box-shadow .15s}
+.c:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(19,96,143,.2)}
 .c a.m{color:inherit;text-decoration:none;display:block}
-.c img{width:100%;aspect-ratio:1;object-fit:cover;background:radial-gradient(circle at 35% 30%,#f3f5f7,#cdd4da);display:block;transition:transform .4s}
-.c:hover img{transform:scale(1.04)}
-.c .i{padding:12px 14px 6px}
-.t{font-weight:600;font-size:14px;line-height:1.3;max-height:4em;overflow:hidden}
-.o{color:var(--mute);font-size:11px;margin-top:3px;max-height:2.6em;overflow:hidden}
-.p{display:inline-block;margin-top:9px;padding:3px 12px;border-radius:99px;font:800 16px system-ui;color:#fff;background:linear-gradient(180deg,#2273ad,#0b3d63);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
-.tag{font-size:12px;color:var(--mute);margin-top:6px}
-.c .x{padding:0 14px 12px;font-size:12px}.x a{color:var(--navy2);font-weight:600}
-.nw{position:absolute;z-index:2;top:10px;left:10px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.6px;padding:3px 10px;border-radius:99px;background:linear-gradient(180deg,#f0344f,var(--new));box-shadow:0 2px 8px rgba(211,18,47,.5),inset 0 1px 0 rgba(255,255,255,.5)}
-@keyframes pl{50%{box-shadow:0 2px 14px rgba(211,18,47,.85),inset 0 1px 0 rgba(255,255,255,.5)}}
-.sk{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(100deg,#dfe4e8 30%,#f4f6f8 50%,#dfe4e8 70%);background-size:200% 100%;animation:s 1.3s infinite}
-@keyframes s{to{background-position:-200% 0}}
-.links{margin-top:30px;font-size:14px;color:var(--mute)}.links a{color:var(--navy2);font-weight:600;margin-right:14px}
-.mu{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:5;border-radius:99px;}
-details{margin-top:22px;background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:14px;padding:4px 14px;box-shadow:0 2px 8px rgba(20,35,45,.06)}
-summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--navy)}
-.sr{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
-.sr a{color:var(--navy2);font-weight:600;margin-left:12px;white-space:nowrap}
-.add{display:flex;gap:8px;padding:12px 0 14px;border-top:1px solid var(--line)}.add input{flex:1;min-width:0;border:1px solid #b9c4cd;border-radius:8px;padding:8px}
-#sum{font-size:12.5px;color:var(--mute);background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 14px}#sum:empty{display:none}#sum div{padding:3px 0}#sum b{color:var(--ink)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}.chips button{border:1px solid #b9c4cd;background:linear-gradient(180deg,#fff,#e9edf1);color:var(--navy);border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 #fff}.chips button.on{color:#fff;border-color:var(--navy);background:linear-gradient(180deg,#2273ad,var(--navy) 55%,#082f4d);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(11,61,99,.3)}
-.ph{position:relative}.pr{position:absolute;right:8px;bottom:8px;color:#fff;font:800 15px system-ui;padding:4px 11px;border-radius:99px;background:linear-gradient(180deg,rgba(20,120,168,.95),rgba(8,47,77,.95));box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}.sc{position:absolute;right:8px;top:8px;font:700 11px system-ui;color:var(--navy);padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.2)}.c.dim{opacity:.6;filter:grayscale(.7)}.wy{position:absolute;z-index:2;left:0;right:0;bottom:0;background:rgba(20,35,45,.82);color:#fff;font:600 12px system-ui;padding:5px 10px;text-align:center}.tag{min-height:1em}
-@media (hover:none){.c::after,.opt::after{display:none}.c:hover,.opt:hover{transform:none}}
-[hidden]{display:none!important}
+.ph{position:relative}.c img{width:100%;aspect-ratio:1;object-fit:cover;background:radial-gradient(circle at 35% 30%,#f3f5f7,#cdd6dd);display:block}
+.pr{position:absolute;right:8px;bottom:8px;color:#fff;font:800 15px system-ui;padding:4px 11px;border-radius:99px;background:linear-gradient(180deg,rgba(42,138,192,.96),rgba(11,63,100,.96));box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+.sc{position:absolute;right:8px;top:8px;font:700 11px system-ui;color:var(--navy);padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.c .i{padding:11px 13px 6px}.t{font-weight:700;font-size:13.5px;line-height:1.3;max-height:4em;overflow:hidden}
+.o{color:var(--mute);font-size:11px;margin-top:3px;max-height:2.6em;overflow:hidden}.tag{font-size:12px;color:var(--mute);margin-top:6px;min-height:1em}
+.c .x{padding:0 13px 11px;font-size:12px}.x a{color:var(--ocean);font-weight:700}
+.nw{position:absolute;z-index:2;top:10px;left:10px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:99px;background:linear-gradient(180deg,#f43f5e,var(--new));box-shadow:0 2px 8px rgba(225,29,72,.5)}
+.c.dim{opacity:.6;filter:grayscale(.7)}.wy{position:absolute;z-index:2;left:0;right:0;bottom:0;background:rgba(15,34,48,.85);color:#fff;font:600 12px system-ui;padding:5px 10px;text-align:center}
+.sk{aspect-ratio:3/4;border-radius:18px;background:linear-gradient(100deg,#e0e6eb 30%,#f4f6f8 50%,#e0e6eb 70%);background-size:200% 100%;animation:s 1.3s infinite}@keyframes s{to{background-position:-200% 0}}
+.links{margin-top:26px;font-size:13px;color:var(--mute)}.links a{color:var(--ocean);font-weight:700;margin-right:14px}
+.mu{position:fixed;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:5}
+@media (hover:none){.c:hover,.opt:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.fd{margin:0 0 4px;padding:2px 12px}.fd>.filters{border:0;box-shadow:none;padding:6px 0 12px}
+[hidden]{display:none!important}
 </style></head><body><main>
-<header class="hero"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset=".5" stop-color="#7f8d99"/><stop offset="1" stop-color="#eef2f6"/></linearGradient><radialGradient id="g2"><stop offset="0" stop-color="#47a3e6"/><stop offset="1" stop-color="#0b3d63"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#g1)"/><circle cx="32" cy="32" r="25" fill="#0c1115"/><circle cx="32" cy="32" r="21" fill="url(#g2)"/><path d="M32 32L22 25M32 32L44 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="12.5" r="2.2" fill="#f2b705"/><circle cx="32" cy="32" r="2.4" fill="#f2b705"/><path d="M15 21a21 21 0 0 1 24-9" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-<div><h1>Seamaster Scout</h1><div class="sub">Diver 300M · SMPc 41mm · Black Bay Pro · Superocean Heritage</div></div></header>
+<header class="hero"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset=".5" stop-color="#7f8d99"/><stop offset="1" stop-color="#eef2f6"/></linearGradient><radialGradient id="g2"><stop offset="0" stop-color="#4fc8de"/><stop offset="1" stop-color="#0a3b5c"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#g1)"/><circle cx="32" cy="32" r="25" fill="#0c1115"/><circle cx="32" cy="32" r="21" fill="url(#g2)"/><path d="M32 32L22 25M32 32L44 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="12.5" r="2.2" fill="#f2b01e"/><circle cx="32" cy="32" r="2.4" fill="#f2b01e"/><path d="M15 21a21 21 0 0 1 24-9" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+<div><h1>Seamaster Scout</h1><div class="sub">Omega Seamaster Diver 300M · pre &amp; post ceramic · 41mm and up</div></div></header>
 <div id="menu" class="menu" hidden></div>
 <section id="app" hidden>
   <div class="bar"><div><b id="mn"></b><div class="sub" id="when"></div></div>
-    <div><button class="btn ghost" id="back">Change search</button> <button class="btn" id="u">Update</button></div></div>
-  <div class="chips" id="wk"><button data-w="all">All watches</button><button data-w="omega">Omega Seamaster Diver 300M</button><button data-w="smpc">Omega SMPc 41mm</button><button data-w="tudor">Tudor Black Bay Pro</button><button data-w="breitling">Breitling Superocean Heritage</button></div>
-  <div class="filters">
-    <label>Max price ¥ <input id="max" type="number" step="50000" min="0" style="width:110px"></label>
-    <label>Sort <select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></label>
-    <label>Movement <select id="mv"><option value="">Automatic or quartz</option><option value="auto">Automatic</option><option value="quartz">Quartz</option></select></label>
-    <label>Stock <select id="stock"><option value="">Shop floors + online store</option><option value="floor">Shop floors only</option></select></label>
-    <label><input type="checkbox" id="spec" checked> Right model only</label>
-    <label>Dial <select id="col"><option value="">Any colour</option><option value="bb">Blue or black</option><option value="blue">Blue</option><option value="black">Black</option></select></label>
-    <label>Complications <select id="cmp"><option value="">Any</option><option value="date">Date only</option></select></label>
-    <label>Min price ¥ <input id="min" type="number" step="50000" min="0" style="width:100px"></label>
-    <label><input type="checkbox" id="showall"> Show filtered-out (greyed)</label>
-    <label><input type="checkbox" id="junk" checked> Hide boxes, straps, parts, new, sold</label>
-    <label><input type="checkbox" id="onlynew"> Only new since last check</label></div>
-  <div id="st"></div><div id="sum"></div>
-  <details id="dg" hidden><summary>Source check (what each site returned)</summary><div id="dgl"></div></details><div id="grid"></div>
-  <details id="dir" hidden><summary>Brick-and-mortar watch shops within 200 km (<span id="dn"></span>)</summary><div id="shops"></div><div class="add"><input id="cu" type="url" placeholder="Paste a shop's stock page to add it to the search"><button class="btn" id="cua">Add</button><button class="btn ghost" id="cuc">Clear added</button></div></details>
+    <div><button class="btn ghost" id="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Back</button><button class="btn" id="u"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>Update</button></div></div>
+  <div class="chips" id="wk"><button data-w="all">All Diver 300M</button><button data-w="pre">Pre-ceramic</button><button data-w="post">Post-ceramic</button><button data-w="smpc">SMPc 41mm</button></div>
+  <details class="fd" id="fd"><summary>Filters</summary><div class="filters">
+    <label class="fl">Max price ¥<input id="max" type="number" step="50000" min="0"></label>
+    <label class="fl">Min price ¥<input id="min" type="number" step="50000" min="0"></label>
+    <label class="fl">Sort<select id="sort"><option value="lo">Cheapest first</option><option value="new">Newest first</option><option value="hi">Priciest first</option></select></label>
+    <label class="fl">Dial<select id="col"><option value="">Any colour</option><option value="bb">Blue or black</option><option value="blue">Blue</option><option value="black">Black</option></select></label>
+    <label class="fl">Complications<select id="cmp"><option value="">Any</option><option value="date">Date only</option></select></label>
+    <label class="fl">Stock<select id="stock"><option value="">Shop floors + online</option><option value="floor">Shop floors only</option></select></label>
+    <label class="fl">Movement<select id="mv"><option value="">Any</option><option value="auto">Automatic</option><option value="quartz">Quartz</option></select></label>
+    <label class="ck"><input type="checkbox" id="spec" checked>Right model only</label>
+    <label class="ck"><input type="checkbox" id="junk" checked>Hide parts, new, sold</label>
+    <label class="ck"><input type="checkbox" id="onlynew">Only new since last check</label>
+    <label class="ck"><input type="checkbox" id="showall">Show filtered-out (greyed)</label></div></details>
+  <div id="st"></div><div id="best"></div><div id="sum"></div>
+  <details id="dg" hidden><summary>Source check (what each site returned)</summary><div id="dgl"></div></details>
+  <div id="grid"></div>
+  <details id="dir" hidden><summary>Brick-and-mortar watch shops within 200 km (<span id="dn"></span>)</summary><div id="shops"></div><div class="add"><input id="cu" type="url" placeholder="Paste a shop's stock page to add it"><button class="btn" id="cua">Add</button><button class="btn ghost" id="cuc">Clear</button></div></details>
   <div class="links">More searches: <a id="l1" target="_blank" rel="noopener">Mercari</a><a id="l2" target="_blank" rel="noopener">Chrono24</a><a id="l3" target="_blank" rel="noopener">Komehyo</a><a id="l4" target="_blank" rel="noopener">2nd Street</a><a href="spy-theme.mid" download>Music (.mid)</a></div>
 </section>
 <button id="mu" class="btn ghost mu" aria-pressed="false">♪ Music: off</button>
 <script>
 const Q="オメガ シーマスター ダイバー300M コーアクシャル",$=id=>document.getElementById(id);
-const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.omega.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
-const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.omega.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
-const SMQ=["212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001"];
-const SMREFS=["212.30.41.20.01.001","212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001","212.30.41.20.03.002"];
-const TK={omega:"https://takayama78online.jp/shop/c/c105020/",tudor:"https://takayama78online.jp/shop/c/c10g0/",breitling:"https://takayama78online.jp/shop/c/c10l020/"};
-const tk=ws=>ws.map(k=>({url:TK[k==="smpc"?"omega":k],tag:"Takayama",enc:"shift_jis",fl:true}));
-const WN={omega:"https://watchnian.com/shop/c/com-seama/?filtercode13=1&pagesize=100",tudor:"https://watchnian.com/shop/c/ctd-bb_ssp/?filtercode13=1&pagesize=100",breitling:"https://watchnian.com/shop/c/cbr-supoc/?filtercode13=1&pagesize=100"};
-function shopJobs(ws){
-  const sm=ws.includes("smpc");ws=[...new Set(ws.map(k=>k==="smpc"?"omega":k))];
+const ya=(l,q)=>"https://auctions.yahoo.co.jp/search/search?p="+encodeURIComponent(q||WATCHES.all.q)+(l?"&loc_cd="+l:"")+"&auccat=23140&s1=new&o1=d&n=50";
+const yp=(l,q)=>"https://auctions.yahoo.co.jp/search/search/"+encodeURIComponent(q||WATCHES.all.q)+"/0/?auccat=23140&s1=new&o1=d&n=50"+(l?"&loc_cd="+l:"");
+const SMQ=["212.30.41.20.01.002","212.30.41.20.01.003","212.30.41.20.03.001"],PREQ=["2220.80","2222.80",...SMQ];
+const TKU="https://takayama78online.jp/shop/c/c105020/";
+const refQ=w=>w==="smpc"?SMQ:w==="pre"?PREQ:[];
+const PRO="オメガ シーマスター プロフェッショナル 300 コーアクシャル";
+const yq=w=>w==="smpc"?[PRO+" 41mm",...SMQ.map(r=>"オメガ シーマスター "+r)]:w==="pre"?[PRO,...PREQ.map(r=>"オメガ シーマスター "+r)]:w==="post"?["オメガ シーマスター ダイバー300M コーアクシャル マスタークロノメーター","オメガ シーマスター ダイバー300M 210.30.42.20"]:["オメガ シーマスター ダイバー300M コーアクシャル",PRO];
+function shopJobs(w){
   const out=[],kq=q=>"https://komehyo.jp/watch-mens/?q="+encodeURIComponent(q)+"&sortKey=02",ok=q=>"https://ec.wb-ookura.com/search?type=product&q="+encodeURIComponent(q);
-  const add=k=>{const W=WATCHES[k];for(const p of["","&page=2"])out.push({url:kq(W.qs)+p,tag:"KOMEHYO",gen:true});for(const p of["","&page=2"])out.push({url:ok(W.qo)+p,tag:"OKURA ONLINE"})};
-  for(const k of ws)out.push({url:WN[k],tag:"WATCHNIAN",fl:true});
-  if(ws.includes("omega")){out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});for(const n of[1,2,3,4])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});add("omega")}
-  if(ws.includes("tudor")){out.push({url:"https://www.rasin.co.jp/SHOP/85111/156586/list.html",tag:"GINZA RASIN",fl:true});add("tudor")}
-  if(ws.includes("breitling"))add("breitling");
-  if(sm){for(const r of SMQ)out.push({url:kq(r),tag:"KOMEHYO",gen:true},{url:ok(r),tag:"OKURA ONLINE"},{url:"https://watchnian.com/shop/goods/search.aspx?search=search%2Cx&keyword="+encodeURIComponent(r),tag:"WATCHNIAN",fl:true});
-    for(const n of[2,3])out.push({url:"https://watchnian.com/shop/c/com-seama_p"+n+"/?filtercode13=1&pagesize=100",tag:"WATCHNIAN",fl:true})}
+  for(const s of["","_p2","_p3"])out.push({url:"https://watchnian.com/shop/c/com-seama"+s+"/?filtercode13=1&pagesize=100",tag:"WATCHNIAN",fl:true});
+  out.push({url:"https://www.rasin.co.jp/SHOP/13606/54479/list.html",tag:"GINZA RASIN",fl:true});
+  for(const n of[1,2,3,4])out.push({url:"https://www.kame-kichi.com/models/OMEGA/SEAMASTER_PRO_RAILMASTER?page="+n,tag:"Kame-kichi"});
+  for(const p of["","&page=2"])out.push({url:kq("シーマスターダイバー300M")+p,tag:"KOMEHYO",gen:true},{url:ok("シーマスター ダイバー300M コーアクシャル")+p,tag:"OKURA ONLINE"});
+  for(const r of refQ(w))out.push({url:kq(r),tag:"KOMEHYO",gen:true},{url:ok(r),tag:"OKURA ONLINE"},{url:"https://watchnian.com/shop/goods/search.aspx?search=search%2Cx&keyword="+encodeURIComponent(r),tag:"WATCHNIAN",fl:true});
   return out;
 }
 const custom=()=>L.get("custom",[]).map(u=>({url:u,tag:new URL(u).hostname.replace(/^www\./,""),gen:true}));
 const MODES={
- area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA and more",jobs:ws=>[...shopJobs(ws),...custom()]},
- japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:ws=>[...ws.flatMap(k=>(k==="smpc"?[WATCHES.smpc.q,...SMQ.map(r=>"オメガ シーマスター "+r)]:[WATCHES[k].q]).map(q=>({url:ya(0,q),alt:yp(0,q),tag:"Yahoo Auctions"}))),...shopJobs(ws),...tk(ws),...(ws.some(k=>k==="omega"||k==="smpc")?[{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"}]:[]),...ws.map(k=>({url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent(WATCHES[k].qo),tag:"COMMIT Ginza"})),...custom()]},
- takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores, all three watches",jobs:ws=>tk(ws)}
+ area:{name:"Osaka + 200 km",sub:"Brick-and-mortar shops within 200 km: GINZA RASIN, KOMEHYO, Kame-kichi, OKURA, Watchnian",jobs:w=>[...shopJobs(w),...custom()]},
+ japan:{name:"All of Japan, including online",sub:"Yahoo Auctions plus every shop site, any location",jobs:w=>[...yq(w).map(q=>({url:ya(0,q),alt:yp(0,q),tag:"Yahoo Auctions"})),...shopJobs(w),{url:TKU,tag:"Takayama",enc:"shift_jis",fl:true},{url:"https://housekihiroba.jp/shop/c/c01omdv03/",tag:"Hoseki Hiroba"},{url:"https://www.kingsroad.jp/SHOP/106783/106786/list.html",tag:"Zetton"},{url:"https://commit-watch.co.jp/search?type=product&q="+encodeURIComponent("シーマスター ダイバー300M コーアクシャル"),tag:"COMMIT Ginza"},...custom()]},
+ takayama:{name:"Takayama pawn shop",sub:"Fukuoka and Kumamoto stores",jobs:()=>[{url:TKU,tag:"Takayama",enc:"shift_jis",fl:true}]}
 };
 
 const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const S={mode:null,w:L.get("w","all"),items:[],when:0};
+const S={mode:null,w:(["all","pre","post","smpc"].includes(L.get("w","all"))?L.get("w","all"):"all"),items:[],when:0};
 const JUNK=/空箱|箱のみ|ベルトのみ|ジャンク|部品取り|パーツ|ダミー|説明書のみ|新品(?!同様)|未使用|のみ$|互換|汎用|対応|シーマスター\s*コマ|コマ\s*\d+\s*コマ|文字板/;
 const ICON={area:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',japan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',takayama:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 2 3 2 4 0 1 2 3 2 4 0 1 2 3 2 4 0 1 2 4 2 4 0"/><path d="M10 20v-5h4v5"/></svg>'};
 $("menu").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="opt" data-k="${k}"><span class="ic">${ICON[k]}</span><span><b>${m.name}</b><span class="d">${m.sub}</span></span></button>`).join("");
@@ -203,7 +199,7 @@ function raw(html,tag){
 function extract(html,base,tag,gen){let r=parseA(html,base,tag,gen);if(r.length)return r;r=mine(html,tag);return r.length?r:raw(html,tag)}
 function diag(h){const t=(h.match(/<title>([^<]{0,40})/)||[])[1]||"no title";return"title="+t+", links="+(h.match(/\/jp\/auction\//g)||[]).length+", ids="+(h.match(/auctionId/g)||[]).length+", next="+h.includes("__NEXT_DATA__")}
 async function update(){
-  const jobs=MODES[S.mode].jobs(wkeys()),info=[];
+  const jobs=MODES[S.mode].jobs(S.w),info=[];
   if(!jobs.length){S.items=[];S.when=Date.now();render("This shop has no stock page set up for the selected watch. ");return}
   $("u").disabled=true;$("grid").innerHTML='<div class="sk"></div>'.repeat(4);
   const res=new Array(jobs.length);let next=0,done=0,last=0;
@@ -251,49 +247,47 @@ function colourOf(n,f){
   if(!k&&!l)return /ホワイト|白|white|グリーン|緑|green|グレー|灰|gr[ae]y|オレンジ|orange|イエロー|黄|ピンク|pink|シルバー|silver|ブラウン|茶|brown|レッド|赤|red/i.test(n)?"other":"";
   return(k?"black":"")+(l?"blue":"");
 }
-const hasComp=(n,f,k)=>/クロノグラフ|chronograph|chrono(?!meter)|GMT|クロノ(?!メーター)|ジーエムティー|ワールドタイマー/i.test(n)||((k==="omega"||k==="smpc")&&f&&f[3]!=="20")||(k==="breitling"&&/A13\d{3}|A23\d{3}|AB01\d{2}/i.test(n));
-function omegaSpec(n){
+const hasComp=(n,f)=>/クロノグラフ|chronograph|chrono(?!meter)|GMT|クロノ(?!メーター)|ジーエムティー|ワールドタイマー/i.test(n)||(f&&f[3]!=="20");
+function sizeOf(n,f){if(f)return f[2]==="44"?43.5:+f[2];const m=n.match(/(?:^|[^\d.])(\d{2}(?:\.\d)?)\s*(?:mm|ミリ|㎜)/i);return m?+m[1]:0}
+function era(n,f){
+  if(f&&f[0]==="210")return"post";if(f&&f[0]==="212")return"pre";if(/\b22(?:20|22|30)\.\d\d\b/.test(n))return"pre";
+  return/マスタークロノメーター|master chronometer|セラミック|ceramic/i.test(n)?"post":"";
+}
+function baseSpec(n){
   const f=ref(n);
   if(/クォーツ|クオーツ|quartz/i.test(n))return"not Co-Axial";
   if(!(/コーアクシャル|co-?axial|マスタークロノメーター|master chronometer/i.test(n)||(f&&(f[0]==="210"||f[0]==="212"))||/\b22(?:20|22|30)\.\d\d\b/.test(n)))return"not Co-Axial";
   if(f&&f[0]!=="210"&&f[0]!=="212")return"other model";
   if(/アクアテラ|aqua ?terra|プラネット|planet|ploprof|プロプロフ|スピードマスター|speedmaster/i.test(n)&&!/ダイバー|diver/i.test(n))return"other model";
+  const z=sizeOf(n,f);if(z&&z<41)return"under 41mm";
   return"";
 }
-function smpcSpec(n){
-  const f=ref(n);
-  if(!f||f[0]!=="212"||f[1]!=="30"||f[2]!=="41"||f[3]!=="20")return"not a 212.30.41.20 SMPc";
-  if(f[4]!=="01"&&f[4]!=="03")return"other dial colour";
-  return"";
-}
+function smpcSpec(n){const f=ref(n);if(!f||f[0]!=="212"||f[1]!=="30"||f[2]!=="41"||f[3]!=="20")return"not a 212.30.41.20 SMPc";if(f[4]!=="01"&&f[4]!=="03")return"other dial colour";return""}
 const WATCHES={
- omega:{name:"Omega Seamaster Diver 300M",q:"オメガ シーマスター ダイバー300M コーアクシャル",qs:"シーマスターダイバー300M",qo:"シーマスター ダイバー300M コーアクシャル",en:"Omega Seamaster Diver 300M Co-Axial",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:omegaSpec},
- smpc:{name:"Omega SMPc 41mm (212.30.41.20)",q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル 41mm",qs:"シーマスターダイバー300M",qo:"シーマスター プロフェッショナル 300 コーアクシャル",en:"Omega Seamaster Professional 300M Co-Axial 41mm",is:/シーマスター|seamaster/i,is2:/300|ダイバー|diver/i,spec:smpcSpec},
- tudor:{name:"Tudor Black Bay Pro",q:"チューダー ブラックベイ プロ",qs:"ブラックベイプロ",qo:"ブラックベイ プロ",en:"Tudor Black Bay Pro",is:/チューダー|チュードル|tudor|ブラックベイ|black ?bay/i,is2:/ブラックベイ|black ?bay|79\d{3}/i,spec:n=>/プロ|\bpro\b|79470/i.test(n)?"":"not the Black Bay Pro"},
- breitling:{name:"Breitling Superocean Heritage",q:"ブライトリング スーパーオーシャン ヘリテージ",qs:"スーパーオーシャンヘリテージ",qo:"スーパーオーシャン ヘリテージ",en:"Breitling Superocean Heritage",is:/ブライトリング|breitling|スーパーオーシャン|superocean|super ocean/i,is2:/スーパーオーシャン|superocean|super ocean|A1732[01]|AB20[1-4]\d/i,spec:n=>/ヘリテージ|heritage|A1732[01]|A1332[0-9]|A2332[0-9]|A1037[0-9]|AB20[1-4]\d|AB01[56]\d/i.test(n)?"":"not Heritage"}};
-const DEF={omega:["bb","date"],smpc:["bb","date"],tudor:["",""],breitling:["",""],all:["",""]};
-function applyDef(){const d=DEF[S.w]||["",""];$("col").value=d[0];$("cmp").value=d[1]}
-function wk(n){for(const k in WATCHES){const W=WATCHES[k];if(W.is.test(n)&&W.is2.test(n))return k}return""}
-const wkeys=()=>S.w==="all"?["omega","tudor","breitling"]:[S.w];
-function sq(){return S.w==="all"?"(オメガ シーマスター ダイバー300M) OR (チューダー ブラックベイ プロ) OR (ブライトリング スーパーオーシャン ヘリテージ)":WATCHES[S.w].q}
+ all:{q:"オメガ シーマスター ダイバー300M コーアクシャル",en:"Omega Seamaster Diver 300M Co-Axial",spec:baseSpec},
+ pre:{q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル",en:"Omega Seamaster Professional 300M Co-Axial",spec:n=>baseSpec(n)||(era(n,ref(n))==="pre"?"":"not pre-ceramic")},
+ post:{q:"オメガ シーマスター ダイバー300M コーアクシャル マスタークロノメーター",en:"Omega Seamaster Diver 300M Master Chronometer",spec:n=>baseSpec(n)||(era(n,ref(n))==="post"?"":"not post-ceramic")},
+ smpc:{q:"オメガ シーマスター プロフェッショナル 300 コーアクシャル 41mm",en:"Omega Seamaster Professional 300M Co-Axial 41mm",spec:smpcSpec}};
+const isDiver=n=>/シーマスター|seamaster/i.test(n)&&/300|ダイバー|diver/i.test(n);
+function applyDef(){$("col").value="bb";$("cmp").value="date"}
+function sq(){return WATCHES[S.w].q}
 function syncW(){
   document.querySelectorAll("#wk button").forEach(b=>b.classList.toggle("on",b.dataset.w===S.w));
-  const W=WATCHES[S.w==="all"?"omega":S.w],q=encodeURIComponent(W.q);
+  const W=WATCHES[S.w],q=encodeURIComponent(W.q);
   $("l1").href="https://jp.mercari.com/search?keyword="+q+"&sort=created_time&order=desc";
   $("l2").href="https://www.chrono24.jp/search/index.htm?query="+encodeURIComponent(W.en);
   $("l3").href="https://www.komehyo.jp/search/?q="+q;$("l4").href="https://www.2ndstreet.jp/search?keyword="+q;
   renderShops();
 }
-function setW(w){S.w=w;L.set("w",w);applyDef();syncW();const c=L.get("c_"+S.mode+"_"+w,null);S.items=c?c.items:[];S.when=c?c.when:0;render();if(!c||Date.now()-c.when>36e5)update()}
+function setW(w){S.w=w;L.set("w",w);syncW();const c=L.get("c_"+S.mode+"_"+w,null);S.items=c?c.items:[];S.when=c?c.when:0;render();if(!c||Date.now()-c.when>36e5)update()}
 $("wk").onclick=e=>{const b=e.target.closest("button");if(b)setW(b.dataset.w)};
 const opts=()=>({max:+$("max").value||0,min:+$("min").value||0,j:$("junk").checked,nw:$("onlynew").checked,sp:$("spec").checked,mv:$("mv").value,stock:$("stock").value,col:$("col").value,cmp:$("cmp").value,all:$("showall").checked});
 function why(i,o){
-  const n=N(i.t),f=ref(n);let k=wk(n);if(S.w==="smpc"&&k==="omega")k="smpc";
-  if(!k)return"not one of your watches";
-  if(S.w!=="all"&&k!==S.w)return"other watch";
-  if(o.sp){const r=WATCHES[k].spec(n);if(r)return r}
+  const n=N(i.t),f=ref(n);
+  if(!isDiver(n))return"not an Omega Diver 300M";
+  if(o.sp){const r=WATCHES[S.w].spec(n);if(r)return r}
   if(o.col){const c=colourOf(n,f);if(c==="other"||(c&&!(o.col==="bb"?/black|blue/.test(c):c.includes(o.col))))return"other dial colour"}
-  if(o.cmp==="date"&&k!=="tudor"&&hasComp(n,f,k))return"has a complication";
+  if(o.cmp==="date"&&hasComp(n,f))return"has a complication";
   if(o.j){if(JUNK.test(n))return"new, unused or parts";if(i.s||!(i.p>0))return"sold out or no price"}
   if(o.stock==="floor"&&!i.fl)return"not on a shop floor";
   if(S.mode==="area"&&i.area===false)return"stock outside the area";
@@ -307,24 +301,36 @@ async function rasinCheck(){
   if(S.mode!=="area")return;
   const o=opts(),list=S.items.filter(i=>!i.st&&SC.some(c=>c[0].test(i.h))&&!why(i,o)).slice(0,40);
   if(!list.length)return;$("st").textContent="Checking which store holds "+list.length+" watches…";
-  const one=async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}};for(let k=0;k<list.length;k+=8)await Promise.all(list.slice(k,k+8).map(one));
+  const one=async i=>{try{const rx=SC.find(c=>c[0].test(i.h))[1],m=(await get(i.h)).replace(/<[^>]+>/g," ").replace(/\s+/g," ").normalize("NFKC").match(rx);if(m){i.st=m[1];i.area=areaOf(m[1]);i.fl=true}}catch(e){}};
+  for(let k=0;k<list.length;k+=8)await Promise.all(list.slice(k,k+8).map(one));
+}
+const ERA={post:"Post-ceramic · 2018 on",pre:"Pre-ceramic · 2005–2018","":"Era not stated"};
+function mk(i,r){
+  const c=document.createElement("div");c.className="c"+(r?" dim":"");
+  c.innerHTML='<a class="m" target="_blank" rel="noopener"><div class="ph"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt=""><span class="pr"></span><span class="sc"></span></div><div class="i"><div class="t"></div><div class="o"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"")+(r?'<span class="wy"></span>':"");
+  c.querySelector(".m").href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}
+  {const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
+  c.querySelector(".pr").textContent=i.p?"¥"+i.p.toLocaleString():"Ask for price";c.querySelector(".sc").textContent=i.tag;
+  const n=N(i.t),ea=era(n,ref(n));
+  c.querySelector(".tag").textContent=[ea?ERA[ea].split(" · ")[0]:"",i.st&&i.st!==i.tag?enSt(i.st):"",i.rk?"Grade "+i.rk:""].filter(Boolean).join(" · ");
+  if(r)c.querySelector(".wy").textContent=r;
+  c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);
+  return c;
 }
 function render(note=""){
   const o=opts(),s=$("sort").value,by={},v=[],d=[];
-  S.items.forEach(i=>{const r=why(i,o),b=by[i.tag]=by[i.tag]||{n:0,ok:0,r:{}};b.n++;if(r){b.r[r]=(b.r[r]||0)+1;if(o.all&&!/^(not one of your watches|other watch)$/.test(r))d.push([i,r])}else{b.ok++;v.push([i,""])}});
+  S.items.forEach(i=>{const r=why(i,o),b=by[i.tag]=by[i.tag]||{n:0,ok:0,r:{}};b.n++;if(r){b.r[r]=(b.r[r]||0)+1;if(o.all&&r!=="not an Omega Diver 300M")d.push([i,r])}else{b.ok++;v.push([i,""])}});
   if(s!=="new")v.sort((a,b)=>(s==="lo"?1:-1)*((a[0].p||9e9)-(b[0].p||9e9)));
   $("when").textContent=S.when?"Updated "+new Date(S.when).toLocaleString():"Not updated yet";
   if(S.when||note)$("st").textContent=note+v.length+" of "+S.items.length+" listings match"+(d.length?" (+ "+d.length+" greyed out)":"");
   $("sum").innerHTML=Object.entries(by).map(([t,b])=>"<div><b>"+t+"</b>: "+b.n+" scanned, "+b.ok+" match"+(Object.keys(b.r).length?" · left out: "+Object.entries(b.r).map(([k,c])=>c+" "+k).join(", "):"")+"</div>").join("");
+  const best=v.filter(x=>x[0].p>0).sort((a,b)=>a[0].p-b[0].p)[0],bx=$("best");bx.classList.toggle("on",!!best);bx.textContent="";
+  if(best){const a=document.createElement("a");a.href=best[0].h;a.target="_blank";a.rel="noopener";const b=document.createElement("b");b.textContent="¥"+best[0].p.toLocaleString();const sp=document.createElement("span");sp.textContent="Cheapest match · "+best[0].tag;a.append(b,sp);bx.append(a)}
   $("grid").innerHTML="";
-  [...v,...d].forEach(([i,r])=>{const c=document.createElement("div");c.className="c"+(r?" dim":"");
-    c.innerHTML='<a class="m" target="_blank" rel="noopener"><div class="ph"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt=""><span class="pr"></span><span class="sc"></span></div><div class="i"><div class="t"></div><div class="o"></div><div class="tag"></div></div></a><div class="x"><a target="_blank" rel="noopener">Full page translation</a></div>'+(i.n?'<span class="nw">NEW</span>':"")+(r?'<span class="wy"></span>':"");
-    c.querySelector(".m").href=i.h;{const im=c.querySelector("img");im.onerror=()=>im.removeAttribute("src");if(i.img)im.src=i.img}
-    {const e=en(i.t);c.querySelector(".t").textContent=e;if(e!==i.t)c.querySelector(".o").textContent=i.t}
-    c.querySelector(".pr").textContent=i.p?"¥"+i.p.toLocaleString():"Ask for price";c.querySelector(".sc").textContent=i.tag;
-    c.querySelector(".tag").textContent=[i.st&&i.st!==i.tag?enSt(i.st):"",i.rk?"Grade "+i.rk:""].filter(Boolean).join(" · ");
-    if(r)c.querySelector(".wy").textContent=r;
-    c.querySelector(".x a").href="https://translate.google.com/translate?sl=ja&tl=en&u="+encodeURIComponent(i.h);$("grid").appendChild(c)});
+  const all=[...v,...d];
+  if(S.w==="all"){const g={post:[],pre:[],"":[]};all.forEach(x=>{const n=N(x[0].t);g[era(n,ref(n))].push(x)});
+    for(const k of["post","pre",""])if(g[k].length){const h=document.createElement("div");h.className="eh";h.textContent=ERA[k]+" ("+g[k].length+")";$("grid").appendChild(h);g[k].forEach(x=>$("grid").appendChild(mk(x[0],x[1])))}}
+  else all.forEach(x=>$("grid").appendChild(mk(x[0],x[1])));
 }
 const TUNE={"n":[[0,38,3,0],[3,38,1,0],[6,45,2,0],[8,38,3,0],[11,50,1,0],[14,45,2,0],[0,74,3,1],[3,77,1,1],[4,81,3,1],[8,79,2,1],[10,77,2,1],[12,74,4,1],[4,62,2,2],[4,65,2,2],[4,69,2,2],[10,62,2,2],[10,65,2,2],[10,69,2,2],[16,38,3,0],[19,38,1,0],[22,45,2,0],[24,38,3,0],[27,50,1,0],[30,45,2,0],[16,76,3,1],[19,77,1,1],[20,74,3,1],[24,73,2,1],[26,74,2,1],[28,69,4,1],[20,62,2,2],[20,65,2,2],[20,69,2,2],[26,62,2,2],[26,65,2,2],[26,69,2,2],[32,43,3,0],[35,43,1,0],[38,50,2,0],[40,43,3,0],[43,55,1,0],[46,50,2,0],[32,70,3,1],[35,74,1,1],[36,77,3,1],[40,76,2,1],[42,74,2,1],[44,70,4,1],[36,67,2,2],[36,70,2,2],[36,74,2,2],[42,67,2,2],[42,70,2,2],[42,74,2,2],[48,45,3,0],[51,45,1,0],[54,52,2,0],[56,45,3,0],[59,57,1,0],[62,52,2,0],[48,73,3,1],[51,76,1,1],[52,79,3,1],[56,77,2,1],[58,76,2,1],[60,73,2,1],[62,69,2,1],[52,57,2,2],[52,61,2,2],[52,64,2,2],[52,67,2,2],[58,57,2,2],[58,61,2,2],[58,64,2,2],[58,67,2,2],[64,38,3,0],[67,38,1,0],[70,45,2,0],[72,38,3,0],[75,50,1,0],[78,45,2,0],[64,81,3,1],[67,77,1,1],[68,74,3,1],[72,77,2,1],[74,81,2,1],[76,74,4,1],[68,62,2,2],[68,65,2,2],[68,69,2,2],[74,62,2,2],[74,65,2,2],[74,69,2,2],[80,46,3,0],[83,46,1,0],[86,53,2,0],[88,46,3,0],[91,58,1,0],[94,53,2,0],[80,77,3,1],[83,74,1,1],[84,70,3,1],[88,74,2,1],[90,77,2,1],[92,82,4,1],[84,58,2,2],[84,62,2,2],[84,65,2,2],[90,58,2,2],[90,62,2,2],[90,65,2,2],[96,45,3,0],[99,45,1,0],[102,52,2,0],[104,45,3,0],[107,57,1,0],[110,52,2,0],[96,81,2,1],[98,79,2,1],[100,76,2,1],[102,73,2,1],[104,76,4,1],[108,73,4,1],[100,57,2,2],[100,61,2,2],[100,64,2,2],[100,67,2,2],[106,57,2,2],[106,61,2,2],[106,64,2,2],[106,67,2,2],[112,38,3,0],[115,38,1,0],[118,45,2,0],[120,38,3,0],[123,50,1,0],[126,45,2,0],[112,74,8,1],[120,69,4,1],[124,74,2,1],[126,69,2,1],[116,62,2,2],[116,65,2,2],[116,69,2,2],[122,62,2,2],[122,65,2,2],[122,69,2,2]],"d":[[0,0],[6,0],[8,0],[4,2],[12,2],[0,1],[2,1],[4,1],[6,1],[8,1],[10,1],[12,1],[14,1],[16,0],[22,0],[24,0],[20,2],[28,2],[16,1],[18,1],[20,1],[22,1],[24,1],[26,1],[28,1],[30,1],[32,0],[38,0],[40,0],[36,2],[44,2],[32,1],[34,1],[36,1],[38,1],[40,1],[42,1],[44,1],[46,1],[48,0],[54,0],[56,0],[52,2],[60,2],[48,1],[50,1],[52,1],[54,1],[56,1],[58,1],[60,1],[62,1],[64,0],[70,0],[72,0],[68,2],[76,2],[64,1],[66,1],[68,1],[70,1],[72,1],[74,1],[76,1],[78,1],[80,0],[86,0],[88,0],[84,2],[92,2],[80,1],[82,1],[84,1],[86,1],[88,1],[90,1],[92,1],[94,1],[96,0],[102,0],[104,0],[100,2],[108,2],[96,1],[98,1],[100,1],[102,1],[104,1],[106,1],[108,1],[110,1],[112,0],[118,0],[120,0],[116,2],[124,2],[112,1],[114,1],[116,1],[118,1],[120,1],[122,1],[124,1],[126,1]]};
 const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>440*2**((n-69)/12);
@@ -352,5 +358,6 @@ async function widgetRun(){
   }catch(e){Android.report(JSON.stringify({ok:0,err:String(e&&e.message||e)}))}
 }
 if(/[?&]widget=1/.test(location.search)&&window.Android)widgetRun();
-else{const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false}
+else{if(innerWidth>760)$("fd").open=true;
+const m=L.get("mode",null);if(m&&MODES[m])open(m);else $("menu").hidden=false}
 </script></main></body></html>

@@ -28,13 +28,17 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -101,39 +105,120 @@ public class WidgetCore {
         WorkManager.getInstance(c).enqueueUniqueWork("smpc-check", ExistingWorkPolicy.REPLACE, req);
     }
 
+    static final String UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36";
+
+    // Downloads a photo: follows redirects (even http to https), sends a referer, shrinks big images.
+    static Bitmap loadBitmap(String u, String referer) {
+        String cur = u;
+        for (int hop = 0; hop < 5; hop++) {
+            try {
+                HttpURLConnection h = (HttpURLConnection) new URL(cur).openConnection();
+                h.setInstanceFollowRedirects(false);
+                h.setConnectTimeout(10000);
+                h.setReadTimeout(15000);
+                h.setRequestProperty("User-Agent", UA);
+                h.setRequestProperty("Accept", "image/webp,image/*,*/*;q=0.8");
+                if (referer != null && referer.length() > 0) {
+                    h.setRequestProperty("Referer", referer);
+                }
+                int code = h.getResponseCode();
+                if (code >= 300 && code < 400) {
+                    String loc = h.getHeaderField("Location");
+                    if (loc == null) {
+                        return null;
+                    }
+                    cur = new URL(new URL(cur), loc).toString();
+                    continue;
+                }
+                if (code != 200) {
+                    return null;
+                }
+                InputStream in = h.getInputStream();
+                ByteArrayOutputStream o = new ByteArrayOutputStream();
+                byte[] b = new byte[8192];
+                int n;
+                while ((n = in.read(b)) > 0) {
+                    o.write(b, 0, n);
+                    if (o.size() > 6000000) {
+                        break;
+                    }
+                }
+                in.close();
+                byte[] data = o.toByteArray();
+                BitmapFactory.Options op = new BitmapFactory.Options();
+                op.inJustDecodeBounds = true;
+                BitmapFactory.decodeByteArray(data, 0, data.length, op);
+                int sample = 1;
+                while (op.outWidth / sample > 800) {
+                    sample *= 2;
+                }
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize = sample;
+                return BitmapFactory.decodeByteArray(data, 0, data.length, o2);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     static void save(Context c, String cat, String json) {
         try {
             JSONObject o = new JSONObject(json);
-            SharedPreferences.Editor e = sp(c, cat).edit();
+            SharedPreferences p = sp(c, cat);
+            SharedPreferences.Editor e = p.edit();
             e.putLong("t", System.currentTimeMillis());
             if (o.optInt("ok") == 1) {
+                String url = o.optString("u");
                 e.putInt("ok", 1);
                 e.putLong("p", o.optLong("p"));
                 e.putString("title", o.optString("t"));
-                e.putString("url", o.optString("u"));
+                e.putString("url", url);
                 e.putString("shop", o.optString("s"));
                 e.putInt("n", o.optInt("n"));
                 e.putString("err", "");
+                ArrayList<String> cands = new ArrayList<String>();
+                JSONArray arr = o.optJSONArray("imgs");
+                if (arr != null) {
+                    for (int i = 0; i < arr.length(); i++) {
+                        cands.add(arr.optString(i));
+                    }
+                } else if (o.optString("img").length() > 0) {
+                    cands.add(o.optString("img"));
+                }
+                File f = new File(c.getFilesDir(), "smpc_" + cat + ".png");
                 boolean has = false;
-                String img = o.optString("img");
-                if (img.length() > 0) {
+                for (String u : cands) {
+                    if (u == null || u.length() == 0) {
+                        continue;
+                    }
+                    Bitmap b = loadBitmap(u, url);
+                    if (b == null) {
+                        continue;
+                    }
                     try {
-                        HttpURLConnection h = (HttpURLConnection) new URL(img).openConnection();
-                        h.setConnectTimeout(10000);
-                        h.setReadTimeout(15000);
-                        h.setRequestProperty("User-Agent", "Mozilla/5.0");
-                        Bitmap b = BitmapFactory.decodeStream(h.getInputStream());
-                        if (b != null) {
-                            float r = Math.min(1f, 240f / Math.max(b.getWidth(), b.getHeight()));
-                            Bitmap s = Bitmap.createScaledBitmap(b, Math.max(1, (int) (b.getWidth() * r)), Math.max(1, (int) (b.getHeight() * r)), true);
-                            FileOutputStream fo = new FileOutputStream(new File(c.getFilesDir(), "smpc_" + cat + ".png"));
-                            s.compress(Bitmap.CompressFormat.PNG, 90, fo);
-                            fo.close();
-                            has = true;
-                        }
+                        float r = Math.min(1f, 360f / Math.max(b.getWidth(), b.getHeight()));
+                        Bitmap s = Bitmap.createScaledBitmap(b, Math.max(1, (int) (b.getWidth() * r)), Math.max(1, (int) (b.getHeight() * r)), true);
+                        FileOutputStream fo = new FileOutputStream(f);
+                        s.compress(Bitmap.CompressFormat.PNG, 90, fo);
+                        fo.close();
+                        has = true;
+                        break;
                     } catch (Exception ex) {
                         has = false;
                     }
+                }
+                // Keep the photo we already have if this is still the same listing.
+                if (!has && f.exists() && url.equals(p.getString("imgFor", ""))) {
+                    has = true;
+                }
+                if (has) {
+                    e.putString("imgFor", url);
+                } else {
+                    if (f.exists()) {
+                        f.delete();
+                    }
+                    e.putString("imgFor", "");
                 }
                 e.putBoolean("img", has);
             } else {

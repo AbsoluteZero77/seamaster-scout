@@ -143,10 +143,10 @@ async function get(url,enc){
 }
 const ITEM=/\/jp\/auction\/|\/shop\/g\/|\/SHOP\/(?:U|z|used)-|\/items\/\d+|\/products\/[\w-]+|komehyo\.jp\/product\//;
 function pic(b,base){
-  for(const i of b.querySelectorAll("img")){
-    for(const k of ["data-src","data-original","data-lazy-src","src"]){
-      const v=i.getAttribute(k)||"";
-      if(v&&!/^data:/.test(v)&&!/\/img\/sys\/|\.svg$|icon_|\/na_\d/i.test(v.split("?")[0])){try{return new URL(v,base).href}catch(e){}}}
+  for(const i of b.querySelectorAll("img,source")){
+    for(const k of ["data-src","data-original","data-lazy-src","data-lazy","src","data-srcset","srcset"]){
+      let v=(i.getAttribute(k)||"").trim();if(/srcset$/.test(k))v=v.split(",")[0].trim().split(/\s+/)[0];
+      if(v&&!/^data:/.test(v)&&!/\/img\/sys\/|\.svg$|icon_|\/na_\d|spacer|blank|loading|noimage/i.test(v.split("?")[0])){try{return new URL(v,base).href}catch(e){}}}
   }return "";
 }
 function parseA(html,base,tag,gen){
@@ -354,7 +354,10 @@ async function widgetRun(){
     v.sort((a,b)=>a.p-b.p);
     const rows=[...$("dgl").children],bad=rows.filter(r=>/error:/.test(r.textContent)).length;
     const base={scanned:S.items.length,sites:rows.length,failed:bad,why:Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,c])=>c+" "+k).join(", "),err:$("st").textContent.indexOf("Update failed")===0?$("st").textContent:""};
-    Android.report(JSON.stringify(v.length?{ok:1,p:v[0].p,t:en(v[0].t),u:v[0].h,img:v[0].img||"",s:v[0].tag,n:v.length,...base}:{ok:0,...base}));
+    const imgs=[];
+    if(v.length){if(v[0].img)imgs.push(v[0].img);
+      try{const h=await get(v[0].h),m=h.match(/<meta[^>]+property=["']og:image["'][^>]*content=["']([^"']+)["']/i)||h.match(/<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image["']/i);if(m)imgs.push(new URL(m[1].replace(/&amp;/g,"&"),v[0].h).href)}catch(e){}}
+    Android.report(JSON.stringify(v.length?{ok:1,p:v[0].p,t:en(v[0].t),u:v[0].h,img:imgs[0]||"",imgs,s:v[0].tag,n:v.length,...base}:{ok:0,...base}));
   }catch(e){Android.report(JSON.stringify({ok:0,err:String(e&&e.message||e)}))}
 }
 if(/[?&]widget=1/.test(location.search)&&window.Android)widgetRun();

@@ -42,6 +42,33 @@ import java.util.TimeZone;
 public class WidgetCore {
     static final String REFRESH = "com.matthew.seamasterscout.REFRESH";
     static final String DAILY = "com.matthew.seamasterscout.DAILY";
+    static final String MODE = "com.matthew.seamasterscout.MODE";
+    static final String[] CATS = {"all", "pre", "post", "smpc"};
+    static final String[] LABELS = {"All Diver 300M", "Pre-ceramic", "Post-ceramic", "SMPc 41mm"};
+
+    static String cat(Context c) {
+        return c.getSharedPreferences("smpc", 0).getString("cat", "smpc");
+    }
+
+    static int idx(String cat) {
+        for (int i = 0; i < CATS.length; i++) {
+            if (CATS[i].equals(cat)) {
+                return i;
+            }
+        }
+        return 3;
+    }
+
+    static SharedPreferences sp(Context c, String cat) {
+        return c.getSharedPreferences("smpc_" + cat, 0);
+    }
+
+    static void cycle(Context c) {
+        String next = CATS[(idx(cat(c)) + 1) % CATS.length];
+        c.getSharedPreferences("smpc", 0).edit().putString("cat", next).apply();
+        draw(c);
+        runNow(c);
+    }
 
     static int flags() {
         return PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0);
@@ -74,10 +101,10 @@ public class WidgetCore {
         WorkManager.getInstance(c).enqueueUniqueWork("smpc-check", ExistingWorkPolicy.REPLACE, req);
     }
 
-    static void save(Context c, String json) {
+    static void save(Context c, String cat, String json) {
         try {
             JSONObject o = new JSONObject(json);
-            SharedPreferences.Editor e = c.getSharedPreferences("smpc", 0).edit();
+            SharedPreferences.Editor e = sp(c, cat).edit();
             e.putLong("t", System.currentTimeMillis());
             if (o.optInt("ok") == 1) {
                 e.putInt("ok", 1);
@@ -99,7 +126,7 @@ public class WidgetCore {
                         if (b != null) {
                             float r = Math.min(1f, 240f / Math.max(b.getWidth(), b.getHeight()));
                             Bitmap s = Bitmap.createScaledBitmap(b, Math.max(1, (int) (b.getWidth() * r)), Math.max(1, (int) (b.getHeight() * r)), true);
-                            FileOutputStream fo = new FileOutputStream(new File(c.getFilesDir(), "smpc.png"));
+                            FileOutputStream fo = new FileOutputStream(new File(c.getFilesDir(), "smpc_" + cat + ".png"));
                             s.compress(Bitmap.CompressFormat.PNG, 90, fo);
                             fo.close();
                             has = true;
@@ -194,13 +221,14 @@ public class WidgetCore {
         if (ids == null || ids.length == 0) {
             return;
         }
-        SharedPreferences sp = c.getSharedPreferences("smpc", 0);
+        String cat = cat(c);
+        SharedPreferences sp = sp(c, cat);
         RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.smpc_widget);
         Intent open;
         Bitmap bmp;
         if (sp.getInt("ok", -1) == 1) {
             Bitmap photo = null;
-            File f = new File(c.getFilesDir(), "smpc.png");
+            File f = new File(c.getFilesDir(), "smpc_" + cat + ".png");
             if (sp.getBoolean("img", false) && f.exists()) {
                 photo = BitmapFactory.decodeFile(f.getAbsolutePath());
             }
@@ -210,13 +238,17 @@ public class WidgetCore {
         } else if (sp.getInt("ok", -1) == 0) {
             String err = sp.getString("err", "");
             String l2 = err.length() > 0 ? err : sp.getInt("scanned", 0) + " listings, " + (sp.getInt("sites", 0) - sp.getInt("failed", 0)) + "/" + sp.getInt("sites", 0) + " sites";
-            bmp = card(null, null, "", "No SMPc found", l2);
+            bmp = card(null, null, "", "None found", l2);
             open = c.getPackageManager().getLaunchIntentForPackage(c.getPackageName());
         } else {
-            bmp = card(null, null, "", "SMPc 41mm", "Tap \u21bb to check");
+            bmp = card(null, null, "", LABELS[idx(cat)], "Checking\u2026 tap \u21bb to retry");
             open = c.getPackageManager().getLaunchIntentForPackage(c.getPackageName());
         }
         v.setImageViewBitmap(R.id.w_card, bmp);
+        v.setTextViewText(R.id.w_mode, LABELS[idx(cat)] + " \u25be");
+        Intent md = new Intent(c, SmpcWidgetProvider.class);
+        md.setAction(MODE);
+        v.setOnClickPendingIntent(R.id.w_mode, PendingIntent.getBroadcast(c, 3, md, flags()));
         if (open != null) {
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             v.setOnClickPendingIntent(R.id.w_root, PendingIntent.getActivity(c, 1, open, flags()));

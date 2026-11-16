@@ -85,16 +85,18 @@ public class SmpcWorker extends Worker {
 
     static class Bridge {
         final Context c;
+        final String cat;
         final CountDownLatch done;
 
-        Bridge(Context c, CountDownLatch done) {
+        Bridge(Context c, String cat, CountDownLatch done) {
             this.c = c;
+            this.cat = cat;
             this.done = done;
         }
 
         @JavascriptInterface
         public void report(String json) {
-            WidgetCore.save(c, json);
+            WidgetCore.save(c, cat, json);
             done.countDown();
         }
     }
@@ -103,6 +105,7 @@ public class SmpcWorker extends Worker {
     @Override
     public Result doWork() {
         final Context c = getApplicationContext();
+        final String cat = WidgetCore.cat(c);
         final CountDownLatch done = new CountDownLatch(1);
         final WebView[] holder = new WebView[1];
         final Http[] http = new Http[1];
@@ -117,8 +120,8 @@ public class SmpcWorker extends Worker {
                 s.setDomStorageEnabled(true);
                 s.setAllowFileAccess(true);
                 w.addJavascriptInterface(http[0], "NativeHttp");
-                w.addJavascriptInterface(new Bridge(c, done), "Android");
-                w.loadUrl("file:///android_asset/public/index.html?widget=1");
+                w.addJavascriptInterface(new Bridge(c, cat, done), "Android");
+                w.loadUrl("file:///android_asset/public/index.html?widget=1&cat=" + cat);
                 w.onResume();
                 w.resumeTimers();
             }

@@ -22,4 +22,21 @@
         android:textColor="#FFFFFF"
         android:textSize="22sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/w_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/mode_pill"
+        android:paddingBottom="3dp"
+        android:paddingLeft="9dp"
+        android:paddingRight="9dp"
+        android:paddingTop="3dp"
+        android:text="SMPc 41mm \u25be"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:textStyle="bold" />
 </FrameLayout>

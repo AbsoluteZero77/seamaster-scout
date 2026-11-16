@@ -24,5 +24,8 @@ public class SmpcWidgetProvider extends AppWidgetProvider {
         if (WidgetCore.REFRESH.equals(i.getAction())) {
             WidgetCore.runNow(c);
         }
+        if (WidgetCore.MODE.equals(i.getAction())) {
+            WidgetCore.cycle(c);
+        }
     }
 }

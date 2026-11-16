@@ -348,7 +348,7 @@ const Mu=(()=>{let ctx,m,timer,on=false,nextT=0,step=0;const SP=60/108/4,hz=n=>4
 $("mu").onclick=()=>Mu.toggle();
 if(L.get("music",false)){const r=e=>{if(e.target.closest("#mu"))return;removeEventListener("pointerdown",r);if(!Mu.on)Mu.toggle()};addEventListener("pointerdown",r)}
 async function widgetRun(){
-  try{S.mode="japan";S.w="smpc";applyDef();$("max").value="";$("min").value="";await update();
+  try{const cat=(location.search.match(/[?&]cat=(\w+)/)||[])[1];S.mode="japan";S.w=["all","pre","post","smpc"].includes(cat)?cat:"smpc";applyDef();$("max").value="";$("min").value="";await update();
     const o=opts(),rc={},v=[];
     S.items.forEach(i=>{const r=why(i,o);if(r)rc[r]=(rc[r]||0)+1;else v.push(i)});
     v.sort((a,b)=>a.p-b.p);
